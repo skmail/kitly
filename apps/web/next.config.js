@@ -1,6 +1,6 @@
 module.exports = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   experimental: {
-    transpilePackages: ["ui"],
+    transpilePackages: ["@kitly/app", "@kitly/create-app"],
   },
 };
