@@ -1,9 +1,9 @@
 import { Point } from "@kitly/system";
+import { applyOffsetToPoints } from "@kitly/system/src/utils/point/apply-offset";
+import { applyZoomToPoints } from "@kitly/system/src/utils/point/apply-zoom";
 import { useApp } from "../../app-provider";
 
-import { getShapePoints, handles } from "@kitly/system";
-
-export function HandleDebug() {
+export function ShapeDebug() {
   const app = useApp();
 
   const [pan, zoom] = app.useWorkspaceStore((state) => [state.pan, state.zoom]);
@@ -12,24 +12,13 @@ export function HandleDebug() {
       return;
     }
 
-    const transformations = state.selectionTransformations.transformations;
+    const transformation = state.selectionTransformations.transformations;
 
-    const result: Point[] = [];
-
-    if (!transformations) {
-      return result;
-    }
-    for (let handle of handles) {
-      result.push(
-        ...getShapePoints({
-          handle,
-          transformations,
-          zoom,
-        })
-      );
+    if (!transformation) {
+      return [] as Point[];
     }
 
-    return result;
+    return applyZoomToPoints(transformation.points, zoom);
   });
 
   return (
@@ -44,7 +33,7 @@ export function HandleDebug() {
 
             width: 4,
             height: 4,
-            background: index === 24 ? "yellow" :"red",
+            background: index === 24 ? "yellow" : "red",
           }}
           key={index}
         />

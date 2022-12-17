@@ -17,10 +17,6 @@ export function SelectionTransform() {
     shallowEqual
   );
 
-  const isSelecting = app.stores.useTransformStore(
-    (state) => state.isSelecting
-  );
-
   const offset = app.useWorkspaceStore((state) => state.offset, shallowEqual);
 
   const ray = app.useRaycastStore(
@@ -36,9 +32,20 @@ export function SelectionTransform() {
     }),
     shallowEqual
   );
+
+  const keyboard = app.useKeyboardStore(
+    (state) => ({
+      AltLeft: state.keyboard.AltLeft,
+      ShiftLeft: state.keyboard.ShiftLeft,
+      Space: state.keyboard.Space,
+    }),
+    shallowEqual
+  );
+
   const transformer = useRef<any>();
   const prev = usePrevious({
     mouse,
+    keyboard,
   });
 
   useEffect(() => {
@@ -62,7 +69,14 @@ export function SelectionTransform() {
         .update(app.useElementsStore.getState().selected, changes);
     };
 
-    if (mouse.isDown && !transformer.current) {
+    const needToStartTransformation =
+      mouse.isDown &&
+      (!transformer.current ||
+        ((prev?.keyboard?.AltLeft !== keyboard.AltLeft ||
+          prev?.keyboard?.ShiftLeft !== keyboard.ShiftLeft) &&
+          keyboard.Space));
+
+    if (needToStartTransformation) {
       const transformations =
         app.useElementsStore.getState().selectionTransformations
           .transformations;
@@ -127,14 +141,28 @@ export function SelectionTransform() {
     if (
       mouse.isDown &&
       transformer.current &&
-      mouse.mouse !== prev.mouse.mouse
+      mouse.mouse !== prev.mouse.mouse 
     ) {
       transformer.current({
         clientX: mouse.mouse[0],
         clientY: mouse.mouse[1],
       });
     }
-  }, [app.useElementsStore, app.useKeyboardStore, mouse, prev, ray]);
+  }, [
+    app.stores.useTransformStore,
+    app.useElementsStore,
+    app.useKeyboardStore,
+    keyboard.AltLeft,
+    keyboard.ShiftLeft,
+    keyboard.Space,
+    mouse.button,
+    mouse.isDown,
+    mouse.mouse,
+    prev?.keyboard?.AltLeft,
+    prev?.keyboard?.ShiftLeft,
+    prev?.mouse?.mouse,
+    ray,
+  ]);
 
   if (!selectionTransformations) {
     return null;

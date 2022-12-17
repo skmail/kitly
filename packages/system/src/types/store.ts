@@ -2,6 +2,7 @@ import { Point } from "@free-transform/core";
 import type { StoreApi, UseBoundStore } from "zustand";
 import { ElementTransformationDetails, MouseButtonType, Element } from ".";
 import { Raycastable } from "./app";
+import { SpatialElement, SpatialTree } from "./spatial-tree";
 
 export type Store<T> = UseBoundStore<StoreApi<T>>;
 
@@ -26,6 +27,7 @@ export interface MouseState {
 }
 
 export interface ElementsState {
+  spatialTree: SpatialTree<SpatialElement>;
   ids: string[];
   elements: Record<string, Element>;
 
@@ -49,7 +51,8 @@ export interface ElementsState {
 
 export interface RaycastState {
   ray?: Raycastable;
-  setRay: (raycastable?: Raycastable) => void;
+  stack: Raycastable[];
+  setRay: (raycastable?: Raycastable, stack?: Raycastable[]) => void;
 }
 
 type RulerState = {

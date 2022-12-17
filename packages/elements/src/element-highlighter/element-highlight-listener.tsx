@@ -25,17 +25,22 @@ export const ElementHighlightListener = () => {
     if (isDown) {
       if (ray?.type === "element") {
         app.useElementsStore.getState().select([ray?.id]);
-        console.log("SELECT");
       } else if (ray?.type !== "handle") {
         app.useElementsStore.getState().select([]);
-        console.log("UNSELECT");
       }
     } else if (ray?.type === "element") {
       app.useElementsStore.getState().hover(ray?.id);
       return;
     }
     app.useElementsStore.getState().hover("");
-  }, [app.useElementsStore, app.useMouseStore, isDown, mouse, ray]);
+  }, [
+    app.stores.useTransformStore,
+    app.useElementsStore,
+    app.useMouseStore,
+    isDown,
+    mouse,
+    ray,
+  ]);
 
   return null;
 };

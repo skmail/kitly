@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
-import type { App } from "@kitly/system";
-import { AppProvider } from "./app-provider";
+import { App, shallowEqual } from "@kitly/system";
+import { AppProvider, useApp } from "./app-provider";
 import { DropLayer } from "./components/drop-layer";
 import classNames from "classnames";
 import { Listeners } from "./components/listeners";
@@ -16,6 +16,8 @@ export function App({ app }: PropsWithChildren<{ app: App }>) {
   if (!app) {
     throw new Error("app is not configured");
   }
+
+  const roots = app.useElementsStore(state => state.ids, shallowEqual)
 
   return (
     <AppProvider app={app}>
@@ -34,7 +36,7 @@ export function App({ app }: PropsWithChildren<{ app: App }>) {
         <Frame>
           <PannableArea>
             <ZoomableArea>
-              <ElementsRenderer />
+              <ElementsRenderer ids={roots} />
             </ZoomableArea>
           </PannableArea>
         </Frame>

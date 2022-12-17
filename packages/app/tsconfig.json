@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/react-library.json",
+  "extends": "@kitly/config/tsconfig/react-library.json",
   "include": ["src/**/*", "../elements/src/element-highlighter"],
   "exclude": ["dist", "build", "node_modules"]
 }

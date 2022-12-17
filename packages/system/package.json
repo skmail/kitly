@@ -8,6 +8,7 @@
     "lint": "TIMING=1 eslint \"**/*.ts*\""
   },
   "devDependencies": {
+    "@types/rbush": "^3.0.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "react": "^18.2.0",
@@ -17,6 +18,7 @@
   "dependencies": {
     "@free-transform/core": "^1.0.6",
     "nanoid": "^4.0.0",
+    "rbush": "^3.0.1",
     "zustand": "^4.1.5"
   }
 }

@@ -5,11 +5,13 @@ import { RaycastState } from "@kitly/system";
 export const useRaycastStore = create(
   subscribeWithSelector<RaycastState>((set) => ({
     ray: undefined,
-    setRay: (raycastables) =>
+    stack: [],
+    setRay: (raycastables, stack = []) =>
       set((state) => {
         return {
           ...state,
           ray: raycastables,
+          stack,
         };
       }),
   }))

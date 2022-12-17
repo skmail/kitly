@@ -24,14 +24,13 @@ export function Renderer({
 
   const app = useApp();
 
-  const Renderer = app.extensions.elements.get(element.type)?.renderer;
+  const extension = app.extensions.elements.get(element.type);
 
-  transformations = useMemo(() => {
-    if (transformations) {
-      return transformations;
-    }
-    return computeElementTransformations(element);
-  }, [transformations, element]);
+  if (!extension) {
+    return null;
+  }
+
+  const Renderer = extension?.renderer;
 
   if (!Renderer) {
     return null;
@@ -40,6 +39,19 @@ export function Renderer({
   if (render) {
     rendered = <Renderer element={element} onUpdate={onUpdate} />;
   }
+
+  if (extension.transformRenderrer === false) {
+    return rendered;
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  transformations = useMemo(() => {
+    if (transformations) {
+      return transformations;
+    }
+    return computeElementTransformations(element);
+  }, [transformations, element]);
+
   return (
     <Transformed transformations={transformations} {...rest}>
       {rendered}

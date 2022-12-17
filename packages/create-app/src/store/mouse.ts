@@ -1,11 +1,11 @@
-import { MouseButton,  MouseState } from "@kitly/system";
+import { MouseButton, MouseState } from "@kitly/system";
 
 import create from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
 export const useMouseStore = create(
   subscribeWithSelector<MouseState>((set) => ({
-    mouse: [0, 0],
+    mouse: [-Infinity, -Infinity],
     isDown: false,
     inWorkspace: false,
     setInsideWorkspace: (inWorkspace) =>

@@ -13,10 +13,12 @@ import {
   ElementTransformationDetails,
   multiply,
   matrixTranslate,
+  SpatialTree,
 } from "@kitly/system";
 
 export const useElementsStore = create(
   subscribeWithSelector<ElementsState>((set) => ({
+    spatialTree: new SpatialTree(),
     hovered: undefined,
     selected: [],
     transformations: {},
@@ -186,6 +188,28 @@ export const useElementsStore = create(
           { transformations: {}, elements: {} }
         );
 
+        Object.values(result.transformations).map((transform) => {
+          const old = state.transformations[transform.id];
+
+          state.spatialTree.remove(
+            {
+              minX: old.bounds.xmin,
+              minY: old.bounds.ymin,
+              maxX: old.bounds.xmax,
+              maxY: old.bounds.ymax,
+              id: transform.id,
+            },
+            (a, b) => a.id === b.id
+          );
+          state.spatialTree.insert({
+            minX: transform.bounds.xmin,
+            minY: transform.bounds.ymin,
+            maxX: transform.bounds.xmax,
+            maxY: transform.bounds.ymax,
+            id: transform.id,
+          });
+        });
+
         return {
           ...state,
           elements: {
@@ -205,6 +229,18 @@ export const useElementsStore = create(
 
     deleteElement: (ids) =>
       set((state) => {
+        for (let id of ids) {
+          state.spatialTree.remove(
+            {
+              minX: 0,
+              minY: 0,
+              maxX: 0,
+              maxY: 0,
+              id,
+            },
+            (a, b) => a.id === b.id
+          );
+        }
         return {
           ...state,
           ids: state.ids.filter((id) => !ids.includes(id)),
@@ -212,7 +248,34 @@ export const useElementsStore = create(
       }),
     addMany: (elements) =>
       set((state) => {
-        const table = arrayToTable(elements);
+        const elementsArrayToTable = (elements: Element[]) => {
+          return arrayToTable(elements, (element, acc) => {
+            if (element.children) {
+              const table = elementsArrayToTable(element.children);
+              acc.items = {
+                ...acc.items,
+                ...table.items,
+              };
+              element = {
+                ...element,
+                children: table.ids,
+              };
+            }
+
+            return element;
+          });
+        };
+        const table = elementsArrayToTable(elements);
+        const transformations = computeElementsTableTransformations(table);
+        Object.values(transformations).map((transform) => {
+          state.spatialTree.insert({
+            minX: transform.bounds.xmin,
+            minY: transform.bounds.ymin,
+            maxX: transform.bounds.xmax,
+            maxY: transform.bounds.ymax,
+            id: transform.id,
+          });
+        });
         return {
           ...state,
           elements: {
@@ -222,7 +285,7 @@ export const useElementsStore = create(
           ids: [...state.ids, ...table.ids],
           transformations: {
             ...state.transformations,
-            ...computeElementsTableTransformations(table),
+            ...transformations,
           },
         };
       }),

@@ -72,14 +72,14 @@ export function computeElementTransformations(
     relativeMatrix
   );
 
-  const bounds = minMax(
-    applyToPoints(absoluteMatrix, [
-      [0, 0],
-      [width, 0],
-      [0, height],
-      [width, height],
-    ])
-  );
+  const points = applyToPoints(absoluteMatrix, [
+    [0, 0],
+    [width, 0],
+    [width, height],
+    [0, height],
+  ]);
+
+  const bounds = minMax(points);
 
   return {
     id: element.id,
@@ -105,6 +105,7 @@ export function computeElementTransformations(
     translation: { tx: element.matrix[0][3], ty: element.matrix[1][3] },
     disabledScale: element.disabledScale,
     bounds,
+    points,
   };
 }
 
@@ -113,6 +114,17 @@ export function computeElementsTableTransformations(table: Table<Element>) {
 
   for (let id of table.ids) {
     transformations[id] = computeElementTransformations(table.items[id]);
+    const children = table.items[id].children;
+
+    if (children) {
+      transformations = {
+        ...transformations,
+        ...computeElementsTableTransformations({
+          ids: children,
+          items: table.items,
+        }),
+      };
+    }
   }
 
   return transformations;

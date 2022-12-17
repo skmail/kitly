@@ -4,7 +4,13 @@ import { useMouseStore } from "./store/mouse";
 import { useWorkspaceStore } from "./store/workspace";
 import { useKeyboardStore } from "./store/keyboard";
 import { useRaycastStore } from "./store/raycast";
-import { elementHighlighter, image, multiselect, text } from "@kitly/elements";
+import {
+  elementHighlighter,
+  image,
+  multiselect,
+  text,
+  group,
+} from "@kitly/elements";
 import {
   App,
   ElementExtension,
@@ -16,7 +22,13 @@ import {
 } from "@kitly/system";
 
 export function createApp(
-  extensions: Extension[] = [multiselect, elementHighlighter, image, text]
+  extensions: Extension[] = [
+    elementHighlighter,
+    multiselect,
+    image,
+    text,
+    group,
+  ]
 ): App {
   const raycasters: {
     raycasters: Raycaster[];

@@ -31,9 +31,12 @@ export type Raycastable<T = string> = {
 export type Raycaster = <T extends App = App>(app: T) => Raycastable | void;
 export type RaycastValidator = <T extends App = App>(app: T) => boolean | void;
 export type RaycastPost = <T extends App = App>(
-  ray: Raycastable,
+  result: {
+    ray: Raycastable;
+    stack: Raycastable[];
+  },
   app: T
-) => boolean | void;
+) => boolean | Raycastable | void;
 
 export type App<E extends Extension[] = Extension[]> = {
   stores: Spread<[ParseExtensions<E>, {}]>;
@@ -74,4 +77,5 @@ export type ElementExtension = {
     onUpdate: OnElementUpdate;
   }>;
   toString(element: Element, app: App): string;
+  transformRenderrer: false;
 };

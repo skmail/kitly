@@ -1,4 +1,9 @@
 import { Extension, getElementIntersectedWithPoint } from "@kitly/system";
+import {
+  ElementRaycastResult,
+  RaycastResult,
+  SelectionRaycastResult,
+} from "../types";
 import { Multiselect } from "./multiselect";
 
 export const multiselect: Extension = {
@@ -8,6 +13,26 @@ export const multiselect: Extension = {
       const ray = app.useRaycastStore.getState().ray;
       if (app.useMouseStore.getState().isDown && ray?.type === "selection") {
         return false;
+      }
+    },
+    post(ray) {
+      let isOverHandle = false;
+      let selection: SelectionRaycastResult | undefined = undefined;
+
+      for (let r of ray.stack as RaycastResult[]) {
+        if (r.type === "handle") {
+          isOverHandle = true;
+        }
+        if (r.type === "selection") {
+          selection = r;
+        }
+        if (selection && isOverHandle) {
+          break;
+        }
+      }
+
+      if (!isOverHandle && selection) {
+        return selection;
       }
     },
     raycast(app) {

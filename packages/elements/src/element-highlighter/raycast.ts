@@ -1,35 +1,43 @@
-import { App, getElementIntersectedWithPoint } from "@kitly/system";
+import { App, Point, satCollision } from "@kitly/system";
 import { raycastTransformHandle } from "./raycast-transform-handle";
 
 export function raycast(app: App) {
-  const transformations =
+  const selectionTransformations =
     app.useElementsStore.getState().selectionTransformations.transformations;
 
   const mouse = app.useMouseStore.getState().mouse;
 
-  if (transformations) {
+  if (selectionTransformations) {
     const zoom = app.useWorkspaceStore.getState().zoom;
     const handle =
-      transformations && raycastTransformHandle(mouse, transformations, zoom);
+      selectionTransformations &&
+      raycastTransformHandle(mouse, selectionTransformations, zoom);
 
     if (handle) {
       return handle;
     }
   }
+  
+  const results = app.useElementsStore.getState().spatialTree.search({
+    minX: mouse[0],
+    minY: mouse[1],
+    maxX: mouse[0] + 15,
+    maxY: mouse[1] + 15,
+  });
 
-  const elementRay = getElementIntersectedWithPoint(
-    mouse,
-    {
-      ids: app.useElementsStore.getState().ids,
-      elements: app.useElementsStore.getState().elements,
-    },
-    app.useElementsStore.getState().transformations
-  );
+  const transformations = app.useElementsStore.getState().transformations;
 
-  if (elementRay) {
-    return {
-      type: "element",
-      id: elementRay,
-    };
+  for (let i = results.length - 1; i >= 0; i--) {
+    const result = results[i];
+
+    const id = result.id;
+    const transformation = transformations[id];
+
+    if (satCollision([mouse], transformation.points)) {
+      return {
+        type: "element",
+        id: result.id,
+      };
+    }
   }
 }

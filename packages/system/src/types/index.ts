@@ -47,6 +47,7 @@ export type ElementTransformationDetails = {
     xmax: number;
     ymax: number;
   };
+  points: Point[];
 };
 
 export interface Element<T = string> {
@@ -60,6 +61,7 @@ export interface Element<T = string> {
   disabledScale?: boolean;
   type: T;
   [key: string]: any;
+  children?: any[];
 }
 
 export type HandleProps = {
@@ -70,5 +72,3 @@ export type HandleProps = {
 };
 
 export type OnElementUpdate = (id: string, payload: Partial<Element>) => void;
-
- 

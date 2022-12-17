@@ -13,16 +13,12 @@ function InternalMultiselect() {
   const [state, setState] = useState<{
     box?: Bounds;
     selectionBounds?: Bounds;
+    itemsBounds?: Bounds[];
   }>({});
 
   const app = useApp<App<[ExtensionDefinition]>>();
-
   const zoom = app.useWorkspaceStore((state) => state.zoom);
-
-  const mouse = app.useMouseStore<Point>(
-    (state) => [state.mouse[0] * zoom, state.mouse[1] * zoom],
-    shallowEqual
-  );
+  const mouse = app.useMouseStore<Point>((state) => state.mouse, shallowEqual);
   const button = app.useMouseStore((state) => state.button, shallowEqual);
 
   const startPoint = useRef<Point | undefined>();
@@ -41,10 +37,8 @@ function InternalMultiselect() {
 
     let width = mouse[0] - startPoint.current[0];
     let height = mouse[1] - startPoint.current[1];
-    const position: Point = [0, 0];
 
-    position[0] = startPoint.current[0];
-    position[1] = startPoint.current[1];
+    const position: Point = [startPoint.current[0], startPoint.current[1]];
 
     if (width < 0) {
       width = Math.max(Math.abs(width), 0);
@@ -52,36 +46,39 @@ function InternalMultiselect() {
     }
 
     selections.current = [];
-    const selectedBounds: Point[] = [];
 
     if (height < 0) {
       height = Math.max(Math.abs(height), 0);
       position[1] = position[1] - height;
     }
 
-    for (let id of app.useElementsStore.getState().ids) {
-      const transformations =
-        app.useElementsStore.getState().transformations[id];
+    const results = app.useElementsStore.getState().spatialTree.search({
+      minX: position[0],
+      minY: position[1],
+      maxX: position[0] + width,
+      maxY: position[1] + height,
+    });
+
+    const transformations = app.useElementsStore.getState().transformations;
+    const selectedBounds: Point[] = [];
+    const itemsBounds: Bounds[] = [];
+
+    for (let result of results) {
+      const transformation = transformations[result.id];
       const points: Point[] = [
-        [
-          transformations.bounds.xmin * zoom,
-          transformations.bounds.ymin * zoom,
-        ],
-        [
-          transformations.bounds.xmax * zoom,
-          transformations.bounds.ymax * zoom,
-        ],
+        [transformation.bounds.xmin, transformation.bounds.ymin],
+        [transformation.bounds.xmax, transformation.bounds.ymax],
       ];
 
-      if (
-        position[0] <= points[0][0] &&
-        position[1] <= points[0][1] &&
-        position[0] + width >= points[1][0] &&
-        position[1] + height >= points[1][1]
-      ) {
-        selectedBounds.push(...points);
-        selections.current.push(id);
-      }
+      itemsBounds.push({
+        position: [transformation.bounds.xmin, transformation.bounds.ymin],
+        size: [
+          transformation.bounds.xmax - transformation.bounds.xmin,
+          transformation.bounds.ymax - transformation.bounds.ymin,
+        ],
+      });
+      selectedBounds.push(...points);
+      selections.current.push(result.id);
     }
 
     let bounds: Bounds | undefined = undefined;
@@ -99,8 +96,9 @@ function InternalMultiselect() {
         size: [width, height],
       },
       selectionBounds: bounds,
+      itemsBounds,
     });
-  }, [app.stores.useTransformStore, app.useElementsStore, button, mouse, zoom]);
+  }, [app.stores.useTransformStore, app.useElementsStore, button, mouse]);
 
   useEffect(
     () => () => {
@@ -121,20 +119,32 @@ function InternalMultiselect() {
         <div
           className="absolute left-0 top-0 border border-orange-500 bg-orange-500 bg-opacity-10"
           style={{
-            width: state.selectionBounds.size[0],
-            height: state.selectionBounds.size[1],
-            left: state.selectionBounds.position[0],
-            top: state.selectionBounds.position[1],
+            width: state.selectionBounds.size[0] * zoom,
+            height: state.selectionBounds.size[1] * zoom,
+            left: state.selectionBounds.position[0] * zoom,
+            top: state.selectionBounds.position[1] * zoom,
           }}
         />
       )}
+      {!!state.itemsBounds &&
+        state.itemsBounds.map((bounds) => (
+          <div
+            className="absolute left-0 top-0 border border-blue-500 bg-blue-500 bg-opacity-10"
+            style={{
+              width: bounds.size[0] * zoom,
+              height: bounds.size[1] * zoom,
+              left: bounds.position[0] * zoom,
+              top: bounds.position[1] * zoom,
+            }}
+          />
+        ))}
       <div
         className="absolute left-0 top-0 border border-blue-500 bg-blue-500 bg-opacity-10"
         style={{
-          width: state.box.size[0],
-          height: state.box.size[1],
-          left: state.box.position[0],
-          top: state.box.position[1],
+          width: state.box.size[0] * zoom,
+          height: state.box.size[1] * zoom,
+          left: state.box.position[0] * zoom,
+          top: state.box.position[1] * zoom,
         }}
       />
     </>
@@ -153,7 +163,7 @@ export function Multiselect() {
       }
     }
   }, [app.stores.useTransformStore, isDown]);
-  
+
   if (!isDown) {
     return null;
   }
