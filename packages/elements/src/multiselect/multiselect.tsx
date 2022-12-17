@@ -1,6 +1,4 @@
-import { App, shallowEqual } from "@kitly/system";
-import { minMax, MouseButton, Point } from "@kitly/system";
-import { isPointInside } from "@kitly/system";
+import { App, shallowEqual, MouseButton, Point } from "@kitly/system";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../../app/src/app-provider";
 import { ExtensionDefinition } from "../element-highlighter/types";
@@ -12,7 +10,6 @@ type Bounds = {
 function InternalMultiselect() {
   const [state, setState] = useState<{
     box?: Bounds;
-    selectionBounds?: Bounds;
     itemsBounds?: Bounds[];
   }>({});
 
@@ -81,21 +78,11 @@ function InternalMultiselect() {
       selections.current.push(result.id);
     }
 
-    let bounds: Bounds | undefined = undefined;
-    if (selectedBounds.length) {
-      const b = minMax(selectedBounds);
-      bounds = {
-        position: [b.xmin, b.ymin],
-        size: [b.width, b.height],
-      };
-    }
-
     setState({
       box: {
         position,
         size: [width, height],
       },
-      selectionBounds: bounds,
       itemsBounds,
     });
   }, [app.stores.useTransformStore, app.useElementsStore, button, mouse]);
@@ -115,21 +102,10 @@ function InternalMultiselect() {
 
   return (
     <>
-      {!!state.selectionBounds && (
-        <div
-          className="absolute left-0 top-0 border border-orange-500 bg-orange-500 bg-opacity-10"
-          style={{
-            width: state.selectionBounds.size[0] * zoom,
-            height: state.selectionBounds.size[1] * zoom,
-            left: state.selectionBounds.position[0] * zoom,
-            top: state.selectionBounds.position[1] * zoom,
-          }}
-        />
-      )}
       {!!state.itemsBounds &&
         state.itemsBounds.map((bounds) => (
           <div
-            className="absolute left-0 top-0 border border-blue-500 bg-blue-500 bg-opacity-10"
+            className="absolute left-0 top-0 border border-orange-500 bg-orange-500 bg-opacity-10"
             style={{
               width: bounds.size[0] * zoom,
               height: bounds.size[1] * zoom,
