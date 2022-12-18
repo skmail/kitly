@@ -1,5 +1,3 @@
-import { Point, Tuple } from "@free-transform/core";
-
 export function isPointInside(point: [number, number], vs: [number, number][]) {
   // ray-casting algorithm based on
   // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html

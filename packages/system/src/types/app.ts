@@ -10,12 +10,9 @@ import {
   WorkspaceState,
 } from "./store";
 
-type ExtensionToAppStructure<T extends Extension> = T["stores"] extends Record<
-  string,
-  any
->
-  ? T["stores"]
-  : {};
+type GetObject<V> = V extends Record<string, any> ? V : {};
+
+type ExtensionToAppStructure<T extends Extension> = GetObject<T["stores"]> & GetObject<T["modifiers"]>;
 
 type ParseExtensions<A extends [...Extension[]]> = A extends [
   infer L extends Extension,
@@ -57,7 +54,22 @@ export type App<E extends Extension[] = Extension[]> = {
     };
     ui: FC[];
   };
+
+  modifiers: {
+    [key: string]: ExtensionModifierCallback[];
+  };
+  applyModifier(name: string, ...args: any[]): any;
 };
+
+export type ExtensionModifierCallback = (...args: any[]) => any;
+
+export type ExtensionModifierDetailed = {
+  priorty: number;
+  modifier: ExtensionModifierCallback;
+};
+export type ExtensionModifier =
+  | ExtensionModifierCallback
+  | ExtensionModifierDetailed;
 
 export type Extension = {
   elements?: ElementExtension[];
@@ -68,6 +80,11 @@ export type Extension = {
   };
   ui?: FC;
   stores?: Record<string, Store<any>>;
+  modifiers?: {
+    [key: string]: {
+      [key: string]: ExtensionModifier[] | ExtensionModifier;
+    };
+  };
 };
 
 export type ElementExtension = {

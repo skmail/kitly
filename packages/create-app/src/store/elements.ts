@@ -18,6 +18,8 @@ import {
 
 export const useElementsStore = create(
   subscribeWithSelector<ElementsState>((set) => ({
+    // this is a mutable object for performance reasons.
+    // copy the results if you needed to make any decisions based on tree history
     spatialTree: new SpatialTree(),
     hovered: undefined,
     selected: [],
@@ -95,7 +97,7 @@ export const useElementsStore = create(
       }),
     elements: {},
     ids: [],
-
+      
     update: (ids, payload) =>
       set((state) => {
         if (!Array.isArray(ids)) {

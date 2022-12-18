@@ -63,6 +63,7 @@ export function FreeTransformElement({
   offset = [0, 0],
   children,
   allowChanges = true,
+  className,
   ...rest
 }: Props & ComponentProps<"div">) {
   const app = useApp();
@@ -79,7 +80,8 @@ export function FreeTransformElement({
       className={classNames(
         "transition",
         "focus:outline-none",
-        animateZoom ? "opacity-0" : "opacity-100"
+        animateZoom && "opacity-0",
+        className
       )}
       zoom={zoom}
     >

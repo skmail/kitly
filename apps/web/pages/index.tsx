@@ -50,54 +50,53 @@ app.useElementsStore.getState().addMany([
     type: "text",
     text: "Welcome ...",
   },
-  // {
-  //   id: "group",
-  //   x: 200,
-  //   y: 200,
-  //   matrix: [
-  //     [1, 0, 0, 0],
-  //     [0, 1, 0, 0],
-  //     [0, 0, 1, 0],
-  //     [0, 0, 0, 1],
-  //   ],
-  //   width: 300,
-  //   height: 300,
-  //   type: "group",
-  //   children: [
-  //     {
-  //       id: "text-group",
-  //       x: 40,
-  //       y: 40,
-  //       matrix: [
-  //         [1, 0, 0, 0],
-  //         [0, 1, 0, 0],
-  //         [0, 0, 1, 0],
-  //         [0, 0, 0, 1],
-  //       ],
-  //       width: 100,
-  //       height: 100,
-  //       type: "text",
-  //       text: "I'm group text ...",
-  //     },
+  {
+    id: "group",
+    x: 400,
+    y: 400,
+    matrix: [
+      [1, 0, 0, 0],
+      [0, 1, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1],
+    ],
+    width: 600,
+    height: 600,
+    type: "group",
+    children: [
+      {
+        id: "text-group",
+        x: 400,
+        y: 400,
+        matrix: [
+          [1, 0, 0, 0],
+          [0, 1, 0, 0],
+          [0, 0, 1, 0],
+          [0, 0, 0, 1],
+        ],
+        width: 100,
+        height: 100,
+        type: "text",
+        text: "I'm group text ...",
+      },
 
-  //     {
-  //       id: "group-image",
-  //       x: 100,
-  //       y: 100,
-  //       matrix: [
-  //         [1, 0, 0, 0],
-  //         [0, 1, 0, 0],
-  //         [0, 0, 1, 0],
-  //         [0, 0, 0, 1],
-  //       ],
-  //       width: 300,
-  //       height: 300,
-  //       type: "image",
-  //       src: "https://plus.unsplash.com/premium_photo-1664547606558-33c44a434b5d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1035&q=80",
-        
-  //     },
-  //   ],
-  // },
+      {
+        id: "group-image",
+        x: 600,
+        y: 600,
+        matrix: [
+          [1, 0, 0, 0],
+          [0, 1, 0, 0],
+          [0, 0, 1, 0],
+          [0, 0, 0, 1],
+        ],
+        width: 300,
+        height: 300,
+        type: "image",
+        src: "https://plus.unsplash.com/premium_photo-1664547606558-33c44a434b5d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1035&q=80",
+      },
+    ],
+  },
 ]);
 export default function Web() {
   return (

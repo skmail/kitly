@@ -2,7 +2,6 @@ export * from "./types";
 export * from "./utils/array-to-table";
 export * from "./utils/element/compute-element-transformations";
 export * from "./utils/unique-id";
-export * from "./utils/element/get-element-intersected-with-point";
 export * from "./utils/element/handles";
 export * from "./utils/get-rotated-image";
 export * from "./utils/element/get-element-handle-info";

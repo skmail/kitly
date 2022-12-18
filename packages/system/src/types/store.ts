@@ -1,10 +1,26 @@
 import { Point } from "@free-transform/core";
 import type { StoreApi, UseBoundStore } from "zustand";
+import type { subscribeWithSelector } from "zustand/middleware";
 import { ElementTransformationDetails, MouseButtonType, Element } from ".";
 import { Raycastable } from "./app";
 import { SpatialElement, SpatialTree } from "./spatial-tree";
 
-export type Store<T> = UseBoundStore<StoreApi<T>>;
+ export type Store<T> = UseBoundStore<StoreApi<T>> & {
+  subscribe: {
+    (
+      listener: (selectedState: T, previousSelectedState: T) => void
+    ): () => void;
+    <U>(
+      selector: (state: T) => U,
+      listener: (selectedState: U, previousSelectedState: U) => void,
+      options?: {
+        equalityFn?: (a: U, b: U) => boolean;
+        fireImmediately?: boolean;
+      }
+    ): () => void;
+  };
+};
+
 
 export interface KeyboardState {
   keyboard: Record<string, boolean>;

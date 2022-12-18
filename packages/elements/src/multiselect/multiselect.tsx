@@ -103,9 +103,10 @@ function InternalMultiselect() {
   return (
     <>
       {!!state.itemsBounds &&
-        state.itemsBounds.map((bounds) => (
+        state.itemsBounds.map((bounds, index) => (
           <div
-            className="absolute left-0 top-0 border border-orange-500 bg-orange-500 bg-opacity-10"
+            key={index}
+            className="absolute left-0 top-0 border border-orange-500 bg-opacity-10"
             style={{
               width: bounds.size[0] * zoom,
               height: bounds.size[1] * zoom,

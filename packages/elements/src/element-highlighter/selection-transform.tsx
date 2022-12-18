@@ -38,6 +38,7 @@ export function SelectionTransform() {
       AltLeft: state.keyboard.AltLeft,
       ShiftLeft: state.keyboard.ShiftLeft,
       Space: state.keyboard.Space,
+      Meta: state.keyboard.Meta,
     }),
     shallowEqual
   );
@@ -64,9 +65,11 @@ export function SelectionTransform() {
     }
 
     const onChange = (changes: Partial<Element>) => {
-      app.useElementsStore
-        .getState()
-        .update(app.useElementsStore.getState().selected, changes);
+      app.applyModifier(
+        "elements.update",
+        app.useElementsStore.getState().selected,
+        changes
+      );
     };
 
     const needToStartTransformation =
@@ -141,7 +144,7 @@ export function SelectionTransform() {
     if (
       mouse.isDown &&
       transformer.current &&
-      mouse.mouse !== prev.mouse.mouse 
+      mouse.mouse !== prev.mouse.mouse
     ) {
       transformer.current({
         clientX: mouse.mouse[0],
@@ -149,6 +152,7 @@ export function SelectionTransform() {
       });
     }
   }, [
+    app,
     app.stores.useTransformStore,
     app.useElementsStore,
     app.useKeyboardStore,
@@ -172,6 +176,7 @@ export function SelectionTransform() {
     <FreeTransformElement
       transformations={selectionTransformations}
       offset={offset}
+      className={keyboard.Space ? "opacity-0" : " transform-opacity "}
     />
   );
 }

@@ -59,7 +59,6 @@ export const useWorkspaceStore = create(
           pan,
         };
       }),
-
     offset: [0, 0],
     setOffset: (offset) =>
       set((state) => {

@@ -1,9 +1,5 @@
-import { Extension, getElementIntersectedWithPoint } from "@kitly/system";
-import {
-  ElementRaycastResult,
-  RaycastResult,
-  SelectionRaycastResult,
-} from "../types";
+import { Extension, satCollision } from "@kitly/system";
+import { RaycastResult, SelectionRaycastResult } from "../types";
 import { Multiselect } from "./multiselect";
 
 export const multiselect: Extension = {
@@ -45,28 +41,7 @@ export const multiselect: Extension = {
       }
       const mouse = app.useMouseStore.getState().mouse;
 
-      const ray = getElementIntersectedWithPoint(
-        mouse,
-        {
-          ids: ["__selection__"],
-          elements: {
-            __selection__: {
-              id: "__selection__",
-              type: "selection",
-              x: transformations.x,
-              y: transformations.y,
-              matrix: transformations.affineMatrix,
-              width: transformations.width,
-              height: transformations.height,
-            },
-          },
-        },
-        {
-          __selection__: transformations,
-        }
-      );
-
-      if (ray) {
+      if (satCollision([mouse], transformations.points)) {
         return {
           type: "selection",
         };

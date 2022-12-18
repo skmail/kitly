@@ -1,18 +1,21 @@
 import { RaycastResult } from "../types";
 import { useEffect } from "react";
 import { useApp } from "@kitly/app";
-import { App } from "@kitly/system";
+import { App, shallowEqual } from "@kitly/system";
 import { ExtensionDefinition } from "./types";
 
 export const ElementHighlightListener = () => {
   const app = useApp<App<[ExtensionDefinition]>>();
 
-  const ray = app.useRaycastStore((state) => state.ray as RaycastResult);
+  const ray = app.useRaycastStore(
+    (state) => state.ray as RaycastResult,
+    shallowEqual
+  );
 
-  const [isDown, mouse] = app.useMouseStore((state) => [
-    state.isDown,
-    state.mouse,
-  ]);
+  const [isDown, mouse] = app.useMouseStore(
+    (state) => [state.isDown, state.mouse],
+    shallowEqual
+  );
 
   useEffect(() => {
     if (
