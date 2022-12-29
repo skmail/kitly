@@ -12,7 +12,8 @@ import {
 
 type GetObject<V> = V extends Record<string, any> ? V : {};
 
-type ExtensionToAppStructure<T extends Extension> = GetObject<T["stores"]> & GetObject<T["modifiers"]>;
+type ExtensionToAppStructure<T extends Extension> = GetObject<T["stores"]> &
+  GetObject<T["modifiers"]>;
 
 type ParseExtensions<A extends [...Extension[]]> = A extends [
   infer L extends Extension,
@@ -54,11 +55,7 @@ export type App<E extends Extension[] = Extension[]> = {
     };
     ui: FC[];
   };
-
-  modifiers: {
-    [key: string]: ExtensionModifierCallback[];
-  };
-  applyModifier(name: string, ...args: any[]): any;
+  [key: string]: any;
 };
 
 export type ExtensionModifierCallback = (...args: any[]) => any;
@@ -91,8 +88,10 @@ export type ElementExtension = {
   name: string;
   renderer: FC<{
     element: Element;
-    onUpdate: OnElementUpdate;
   }>;
   toString(element: Element, app: App): string;
   transformRenderrer: false;
+  modifiers?: {
+    [key: string]: ExtensionModifierCallback;
+  };
 };

@@ -10,6 +10,8 @@ import {
   toDegree,
   Point,
 } from "@free-transform/core";
+import { applyZoomToPoint } from "@kitly/system/src/utils/point/apply-zoom";
+import { applyOffsetToPoint } from "@kitly/system/src/utils/point/apply-offset";
 
 interface Props {
   position: [number, number];
@@ -25,14 +27,14 @@ export function Handle({
   style = {},
   ...rest
 }: ComponentProps<"div"> & Props) {
-  const { transformations } = useFreeTransform();
+  const { transformations, zoom } = useFreeTransform();
 
   const transform = useMemo(() => {
-    const point1 = applyToPoint(transformations.absoluteMatrix, [
+    const point1 = applyToPoint(transformations.relativeMatrix, [
       Math.floor(position[0]) * transformations.width,
       Math.floor(position[1]) * transformations.height,
     ]);
-    const point2 = applyToPoint(transformations.absoluteMatrix, [
+    const point2 = applyToPoint(transformations.relativeMatrix, [
       Math.ceil(position[0]) * transformations.width,
       Math.ceil(position[1]) * transformations.height,
     ]);
@@ -52,18 +54,28 @@ export function Handle({
       ],
       radians
     );
-    return `translate(${offsetPosition[0] + point[0]}px, ${
-      offsetPosition[1] + point[1]
-    }px) rotate(${-toDegree(radians)}deg)`;
+
+    const final = applyZoomToPoint(
+      applyOffsetToPoint(
+        [offsetPosition[0] + point[0], offsetPosition[1] + point[1]],
+        transformations.worldPosition
+      ),
+      zoom
+    );
+    return `translate(${final[0]}px, ${final[1]}px) rotate(${-toDegree(
+      radians
+    )}deg)`;
   }, [
     offset,
     position,
-    transformations.absoluteMatrix,
     transformations.height,
+    transformations.relativeMatrix,
     transformations.rotation.wraped,
     transformations.scale.sx,
     transformations.scale.sy,
     transformations.width,
+    transformations.worldPosition,
+    zoom,
   ]);
 
   return (

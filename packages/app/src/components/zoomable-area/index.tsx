@@ -11,7 +11,7 @@ export function ZoomableArea({ children }: PropsWithChildren<{}>) {
   );
  
   return (
-    <div
+    <g
       style={{
         transform: `scale(${zoom})`,
         width: size[0],
@@ -26,6 +26,6 @@ export function ZoomableArea({ children }: PropsWithChildren<{}>) {
       }}
     >
       {children}
-    </div>
+    </g>
   );
 }

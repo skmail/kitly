@@ -24,18 +24,14 @@ export type ElementTransformationDetails = {
   x: number;
   y: number;
 
-  baseWidth: number;
-  baseHeight: number;
-
   scale: { sx: number; sy: number };
   rotation: { angle: number; wraped: number; degree: number };
   translation: { tx: number; ty: number };
   affineMatrix: Matrix;
-  invertedAffineMatrix: Matrix;
-  perspectiveMatrix: Matrix;
-  relativeMatrix: Matrix; // affine + perspective
-  absoluteMatrix: Matrix; // affine + perspective + translate matrix(x, y)
-  warp: WrapPoints;
+  absoluteMatrix: Matrix;
+  relativeMatrix: Matrix;
+  rotationMatrix: Matrix;
+
   width: number;
   height: number;
   disabledScale?: boolean;
@@ -48,6 +44,7 @@ export type ElementTransformationDetails = {
     ymax: number;
   };
   points: Point[];
+  worldPosition: Point;
 };
 
 export interface Element<T = string> {
@@ -62,6 +59,7 @@ export interface Element<T = string> {
   type: T;
   [key: string]: any;
   children?: any[];
+  parentId?: string;
 }
 
 export type HandleProps = {

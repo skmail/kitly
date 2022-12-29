@@ -31,11 +31,12 @@ export function Transformed({
     warp,
     disabledScale,
   });
-
+ 
   const matrix3d = useMemo(
     () => transpose(values.translatedMatrix),
     [values.translatedMatrix]
   );
+  
 
   return (
     <div

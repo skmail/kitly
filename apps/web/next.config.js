@@ -3,4 +3,6 @@ module.exports = {
   experimental: {
     transpilePackages: ["@kitly/app", "@kitly/create-app"],
   },
+  productionBrowserSourceMaps: true,
+
 };

@@ -39,13 +39,13 @@ const DropLayerInternal = forwardRef<
       position.x = mouse[0] - (clientOffset.x - sourceOffset.x);
       position.y = mouse[1] - (clientOffset.y - sourceOffset.y);
 
-      app.useElementsStore.getState().addMany(
-        item.map((item) => ({
-          ...item,
-          id: uniqueId(),
-          ...position,
-        }))
-      );
+      // app.useElementsStore.getState().addMany(
+      //   item.map((item) => ({
+      //     ...item,
+      //     id: uniqueId(),
+      //     ...position,
+      //   }))
+      // );
     },
   }));
 

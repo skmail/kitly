@@ -1,6 +1,18 @@
-import { App, shallowEqual, MouseButton, Point } from "@kitly/system";
+import { usePrevious } from "@kitly/app/src/hooks/usePrevious";
+import {
+  App,
+  shallowEqual,
+  MouseButton,
+  Point,
+  satCollision,
+  round,
+  Vec,
+} from "@kitly/system";
+import { applyZoomToPoints } from "@kitly/system/src/utils/point/apply-zoom";
+import { throttle } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../../app/src/app-provider";
+import { Box } from "../element-highlighter/free-transform/box";
 import { ExtensionDefinition } from "../element-highlighter/types";
 
 type Bounds = {
@@ -8,10 +20,10 @@ type Bounds = {
   size: Point;
 };
 function InternalMultiselect() {
-  const [state, setState] = useState<{
-    box?: Bounds;
-    itemsBounds?: Bounds[];
-  }>({});
+  const [selectionBoundaries, setSelectionBoundaries] = useState<Bounds | null>(
+    null
+  );
+  const [selectionBoxes, setSelectionBoxes] = useState<Point[][]>([]);
 
   const app = useApp<App<[ExtensionDefinition]>>();
   const zoom = app.useWorkspaceStore((state) => state.zoom);
@@ -20,6 +32,50 @@ function InternalMultiselect() {
 
   const startPoint = useRef<Point | undefined>();
   const selections = useRef<string[]>([]);
+
+  const updateSelectionsRef = useRef(
+    throttle((selectionBoundaries: Bounds) => {
+      const zoom = app.useWorkspaceStore.getState().zoom;
+
+      const results = app.useElementsStore.getState().spatialTree.search({
+        minX: selectionBoundaries.position[0],
+        minY: selectionBoundaries.position[1],
+        maxX: selectionBoundaries.position[0] + selectionBoundaries.size[0],
+        maxY: selectionBoundaries.position[1] + selectionBoundaries.size[1],
+      });
+      const collisionPoints: Point[] = [
+        selectionBoundaries.position,
+        [
+          selectionBoundaries.position[0] + selectionBoundaries.size[0],
+          selectionBoundaries.position[1],
+        ],
+        [
+          selectionBoundaries.position[0] + selectionBoundaries.size[0],
+          selectionBoundaries.position[1] + selectionBoundaries.size[1],
+        ],
+        [
+          selectionBoundaries.position[0],
+          selectionBoundaries.position[1] + selectionBoundaries.size[1],
+        ],
+      ];
+      const transformations = app.useElementsStore.getState().transformations;
+      const itemsBounds: Point[][] = [];
+      const ids = results.map((result) => result.id);
+      const newIds = app.elements.filterSelections(ids);
+
+      selections.current = [];
+      for (let id of newIds) {
+        const transformation = transformations[id];
+        if (!satCollision(collisionPoints, transformation.points)) {
+          continue;
+        }
+        itemsBounds.push(applyZoomToPoints(transformation.points, zoom));
+        selections.current.push(id);
+      }
+
+      setSelectionBoxes(itemsBounds);
+    }, 50)
+  );
 
   useEffect(() => {
     if (button !== MouseButton.LEFT) {
@@ -42,50 +98,43 @@ function InternalMultiselect() {
       position[0] = position[0] - width;
     }
 
-    selections.current = [];
-
     if (height < 0) {
       height = Math.max(Math.abs(height), 0);
       position[1] = position[1] - height;
     }
 
-    const results = app.useElementsStore.getState().spatialTree.search({
-      minX: position[0],
-      minY: position[1],
-      maxX: position[0] + width,
-      maxY: position[1] + height,
+    setSelectionBoundaries({
+      position,
+      size: [width, height],
     });
+  }, [app, app.stores.useTransformStore, app.useElementsStore, button, mouse]);
 
-    const transformations = app.useElementsStore.getState().transformations;
-    const selectedBounds: Point[] = [];
-    const itemsBounds: Bounds[] = [];
-
-    for (let result of results) {
-      const transformation = transformations[result.id];
-      const points: Point[] = [
-        [transformation.bounds.xmin, transformation.bounds.ymin],
-        [transformation.bounds.xmax, transformation.bounds.ymax],
-      ];
-
-      itemsBounds.push({
-        position: [transformation.bounds.xmin, transformation.bounds.ymin],
-        size: [
-          transformation.bounds.xmax - transformation.bounds.xmin,
-          transformation.bounds.ymax - transformation.bounds.ymin,
-        ],
-      });
-      selectedBounds.push(...points);
-      selections.current.push(result.id);
+  const prevSelectionBoundaries = usePrevious(selectionBoundaries);
+  useEffect(() => {
+    if (button !== MouseButton.LEFT) {
+      return;
+    }
+    if (!selectionBoundaries) {
+      setSelectionBoxes([]);
+      return;
     }
 
-    setState({
-      box: {
-        position,
-        size: [width, height],
-      },
-      itemsBounds,
-    });
-  }, [app.stores.useTransformStore, app.useElementsStore, button, mouse]);
+    if (
+      prevSelectionBoundaries &&
+      Vec.isEqual(
+        Vec.round(prevSelectionBoundaries.position, 1),
+        Vec.round(selectionBoundaries.position, 1)
+      ) &&
+      Vec.isEqual(
+        Vec.round(prevSelectionBoundaries.size, 1),
+        Vec.round(selectionBoundaries.size, 1)
+      )
+    ) {
+      return;
+    }
+
+    updateSelectionsRef.current(selectionBoundaries);
+  }, [app.useWorkspaceStore, button, selectionBoundaries]);
 
   useEffect(
     () => () => {
@@ -96,32 +145,23 @@ function InternalMultiselect() {
     []
   );
 
-  if (!state.box) {
+  if (!selectionBoundaries) {
     return null;
   }
 
   return (
     <>
-      {!!state.itemsBounds &&
-        state.itemsBounds.map((bounds, index) => (
-          <div
-            key={index}
-            className="absolute left-0 top-0 border border-orange-500 bg-opacity-10"
-            style={{
-              width: bounds.size[0] * zoom,
-              height: bounds.size[1] * zoom,
-              left: bounds.position[0] * zoom,
-              top: bounds.position[1] * zoom,
-            }}
-          />
+      {!!selectionBoxes &&
+        selectionBoxes.map((points, index) => (
+          <Box strokeWidth={1.5} key={index} points={points} />
         ))}
       <div
         className="absolute left-0 top-0 border border-blue-500 bg-blue-500 bg-opacity-10"
         style={{
-          width: state.box.size[0] * zoom,
-          height: state.box.size[1] * zoom,
-          left: state.box.position[0] * zoom,
-          top: state.box.position[1] * zoom,
+          width: selectionBoundaries.size[0] * zoom,
+          height: selectionBoundaries.size[1] * zoom,
+          left: selectionBoundaries.position[0] * zoom,
+          top: selectionBoundaries.position[1] * zoom,
         }}
       />
     </>

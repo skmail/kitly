@@ -9,7 +9,7 @@ export const Renderer = ({
   element: TextElement;
   onUpdate?: OnElementUpdate;
 }) => {
-  const ref = useRef<HTMLSpanElement>(null);
+  const ref = useRef<SVGTextElement>(null);
   const text = useMemo(() => {
     return element.text;
   }, [element.text]);
@@ -42,8 +42,12 @@ export const Renderer = ({
     });
   }, [element.id, onUpdate]);
 
+  
+
   return (
-    <span
+    <text
+    dominantBaseline="text-before-edge"
+    lengthAdjust="spacingAndGlyphs"
       style={{
         fontSize: "14px",
         whiteSpace: "pre-line",

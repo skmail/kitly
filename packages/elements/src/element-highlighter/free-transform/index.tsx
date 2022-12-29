@@ -67,23 +67,6 @@ export function FreeTransform({
   ...rest
 }: ComponentProps<"div"> & Props) {
   const ref = useRef<HTMLDivElement>(null);
-
-  transformations = useMemo(() => {
-    let relativeMatrix: Matrix = multiply(
-      matrixScale(zoom, zoom),
-      transformations.relativeMatrix
-    );
-    const absoluteMatrix = multiply(
-      matrixTranslate(transformations.x * zoom, transformations.y * zoom),
-      relativeMatrix
-    );
-
-    return {
-      ...transformations,
-      relativeMatrix,
-      absoluteMatrix,
-    };
-  }, [zoom, transformations]);
   return (
     <Context.Provider
       value={{

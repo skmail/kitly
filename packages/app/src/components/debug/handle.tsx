@@ -1,53 +1,44 @@
-import { Point } from "@kitly/system";
+import { minMax, Point, shallowEqual } from "@kitly/system";
 import { useApp } from "../../app-provider";
 
 import { getShapePoints, handles } from "@kitly/system";
+import { Box } from "@kitly/elements/src/element-highlighter/free-transform/box";
 
 export function HandleDebug() {
   const app = useApp();
 
-  const [pan, zoom] = app.useWorkspaceStore((state) => [state.pan, state.zoom]);
-  const handleslist = app.useElementsStore((state) => {
+  const zoom = app.useWorkspaceStore((state) => state.zoom);
+  const data = app.useElementsStore((state) => {
     if (!state.selected) {
       return;
     }
 
-    const transformations = state.selectionTransformations.transformations;
+    const transformations = state.selectionTransformations;
 
-    const result: Point[] = [];
+    const result: Point[][] = [];
+    const all: Point[] = [];
 
     if (!transformations) {
-      return result;
-    }
-    for (let handle of handles) {
-      result.push(
-        ...getShapePoints({
-          handle,
-          transformations,
-          zoom,
-        })
-      );
+      return;
     }
 
-    return result;
-  });
+    return handles.map((handle) =>
+      getShapePoints({
+        handle,
+        transformations,
+        zoom,
+      })
+    );
+  }, shallowEqual);
+
+  if (!data) {
+    return null;
+  }
 
   return (
     <>
-      {handleslist?.map((handle, index) => (
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            transform: `translate(${handle[0]}px, ${handle[1]}px)`,
-
-            width: 4,
-            height: 4,
-            background: index === 24 ? "yellow" :"red",
-          }}
-          key={index}
-        />
+      {data.map((points) => (
+        <Box points={points} strokeDasharray="1" stroke="#fef08a" />
       ))}
     </>
   );

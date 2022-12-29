@@ -21,12 +21,12 @@ export function getDirection(angle: number) {
 
 export function getElementHandleInfo({ handle, transformations }: Props) {
   const boxSize = 100;
-  const point = applyToPoint(transformations.invertedAffineMatrix, [
+  const point = applyToPoint(transformations.rotationMatrix, [
     handle[0] * boxSize,
     handle[1] * boxSize,
   ]);
 
-  const center = applyToPoint(transformations.invertedAffineMatrix, [
+  const center = applyToPoint(transformations.rotationMatrix, [
     0.5 * boxSize,
     0.5 * boxSize,
   ]);

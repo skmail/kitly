@@ -33,8 +33,7 @@ export const multiselect: Extension = {
     },
     raycast(app) {
       const transformations =
-        app.useElementsStore.getState().selectionTransformations
-          .transformations;
+        app.useElementsStore.getState().selectionTransformations;
 
       if (!transformations) {
         return;

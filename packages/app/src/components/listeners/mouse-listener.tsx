@@ -41,13 +41,21 @@ export function MouseListener() {
       mouseState.setInsideWorkspace(element.contains(e.target as HTMLElement));
     };
 
+    let lastMove = [-Infinity, -Infinity];
     const onMove = (e: MouseEvent) => {
+      const m = [Math.round(e.clientX), Math.round(e.clientY)];
+      if (m[0] === lastMove[0] && m[1] === lastMove[1]) {
+        return;
+      }
+      lastMove = m;
+
       const mouse = normalize(e);
       mouseState.setMouse(mouse[0], mouse[1]);
       mouseState.setInsideWorkspace(element.contains(e.target as HTMLElement));
     };
 
     const onLeave = (e: MouseEvent) => {
+      lastMove = [-Infinity, -Infinity];
       e.preventDefault();
       mouseState.setInsideWorkspace(false);
     };

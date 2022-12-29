@@ -3,7 +3,7 @@ import { raycastTransformHandle } from "./raycast-transform-handle";
 
 export function raycast(app: App) {
   const selectionTransformations =
-    app.useElementsStore.getState().selectionTransformations.transformations;
+    app.useElementsStore.getState().selectionTransformations;
 
   const mouse = app.useMouseStore.getState().mouse;
 

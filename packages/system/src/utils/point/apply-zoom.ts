@@ -5,8 +5,13 @@ export const applyZoomToPoints = (
   zoom = 1,
   pan: Point = [0, 0]
 ): Point[] => {
-  return points.map((point) => [
-    point[0] * zoom + pan[0],
-    point[1] * zoom + pan[1],
-  ]);
+  return points.map((point) => applyZoomToPoint(point, zoom, pan));
+};
+
+export const applyZoomToPoint = (
+  point: Point,
+  zoom = 1,
+  pan: Point = [0, 0]
+): Point => {
+  return [point[0] * zoom + pan[0], point[1] * zoom + pan[1]];
 };

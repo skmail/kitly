@@ -29,7 +29,7 @@ export function Frame({ children }: PropsWithChildren) {
       }}
       mountTarget="body"
       initialContent={
-        "<!DOCTYPE html><html><head><style>*{color:#fff;}</style></head><body></body></html>"
+        "<!DOCTYPE html><html><head><style>*{color:#fff;} text{fill:#fff}</style></head><body></body></html>"
       }
     >
       {children}

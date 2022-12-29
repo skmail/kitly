@@ -3,7 +3,6 @@ import {
   computeElementTransformations,
   Element,
   ElementTransformationDetails,
-  OnElementUpdate,
 } from "@kitly/system";
 import { Transformed } from "./transformed";
 import { useApp } from "../../app-provider";
@@ -11,13 +10,11 @@ import { useApp } from "../../app-provider";
 export function Renderer({
   element,
   render = true,
-  onUpdate,
   transformations,
   ...rest
-}: ComponentProps<"div"> & {
+}: Omit<ComponentProps<"g">, "offset"> & {
   element: Element;
   render?: boolean;
-  onUpdate: OnElementUpdate;
   transformations?: ElementTransformationDetails;
 }) {
   let rendered: any = null;
@@ -37,7 +34,7 @@ export function Renderer({
   }
 
   if (render) {
-    rendered = <Renderer element={element} onUpdate={onUpdate} />;
+    rendered = <Renderer element={element} />;
   }
 
   if (extension.transformRenderrer === false) {
@@ -53,8 +50,10 @@ export function Renderer({
   }, [transformations, element]);
 
   return (
-    <Transformed transformations={transformations} {...rest}>
+    <Transformed style={{}} transformations={transformations} {...rest}>
       {rendered}
     </Transformed>
   );
 }
+
+

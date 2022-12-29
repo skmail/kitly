@@ -5,6 +5,10 @@ import { ElementHighlightListener } from "./element-highlight-listener";
 import { useTransformStore } from "./transform-store";
 import { ExtensionDefinition } from "./types";
 import { validate } from "./raycast-validation";
+import { App, Element } from "@kitly/system";
+import { transform } from "./transform";
+import { mergeResultToResult, mergeResultToState } from "./utils";
+import { update } from "./modifiers/update";
 
 function ElementHighlighter() {
   return (
@@ -24,5 +28,15 @@ export const elementHighlighter: ExtensionDefinition = {
   raycast: {
     validate,
     raycast,
+  },
+  modifiers: {
+    elements: {
+      update: [
+        {
+          priorty: Infinity,
+          modifier: update,
+        },
+      ],
+    },
   },
 };

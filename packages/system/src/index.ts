@@ -12,4 +12,6 @@ export * from "./utils/shallowEqual";
 export * from "./types/app";
 export * from "./types/store";
 export * from "./spatial-tree";
-export * from "./sat";
+export * from "./sat"; 
+export * from "./shear";
+export * from "./vec"

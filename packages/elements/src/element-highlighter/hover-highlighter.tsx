@@ -13,6 +13,7 @@ export function HoverHighlighter() {
     return state.transformations[state.hovered];
   }, shallow);
 
+  
   if (!transformations) {
     return null;
   }

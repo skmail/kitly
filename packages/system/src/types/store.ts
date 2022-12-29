@@ -5,7 +5,7 @@ import { ElementTransformationDetails, MouseButtonType, Element } from ".";
 import { Raycastable } from "./app";
 import { SpatialElement, SpatialTree } from "./spatial-tree";
 
- export type Store<T> = UseBoundStore<StoreApi<T>> & {
+export type Store<T> = UseBoundStore<StoreApi<T>> & {
   subscribe: {
     (
       listener: (selectedState: T, previousSelectedState: T) => void
@@ -20,7 +20,6 @@ import { SpatialElement, SpatialTree } from "./spatial-tree";
     ): () => void;
   };
 };
-
 
 export interface KeyboardState {
   keyboard: Record<string, boolean>;
@@ -46,18 +45,13 @@ export interface ElementsState {
   spatialTree: SpatialTree<SpatialElement>;
   ids: string[];
   elements: Record<string, Element>;
+  globalPosition: Record<string, Point>;
 
   transformations: Record<string, ElementTransformationDetails>;
 
-  selectionTransformations: {
-    transformations?: ElementTransformationDetails;
-    originals: Record<string, ElementTransformationDetails>;
-    original?: ElementTransformationDetails;
-  };
-  update(id: string | string[], data: Partial<Element>): void;
+  selectionTransformations?: ElementTransformationDetails;
+  update(data: Partial<ElementsState>): void;
   deleteElement(ids: string[]): void;
-
-  addMany: <T extends Element>(elements: T[]) => void;
 
   hovered?: string;
   hover(id?: string): void;

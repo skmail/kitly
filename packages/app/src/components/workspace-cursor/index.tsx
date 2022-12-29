@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useApp } from "../../app-provider";
-import { shallowEqual, getElementHandleInfo, getRotatedImage } from "@kitly/system";
+import {
+  shallowEqual,
+  getElementHandleInfo,
+  getRotatedImage,
+} from "@kitly/system";
 
 import {
   ElementRaycastResult,
@@ -30,8 +34,7 @@ export function WorkspaceCursor() {
 
     if (ray.type === "handle") {
       const selectionTransformations =
-        app.useElementsStore.getState().selectionTransformations
-          .transformations;
+        app.useElementsStore.getState().selectionTransformations;
       if (selectionTransformations) {
         const angle = getElementHandleInfo({
           handle: ray.handle,

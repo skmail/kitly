@@ -17,7 +17,7 @@ export function App({ app }: PropsWithChildren<{ app: App }>) {
     throw new Error("app is not configured");
   }
 
-  const roots = app.useElementsStore(state => state.ids, shallowEqual)
+  const roots = app.useElementsStore((state) => state.ids, shallowEqual);
 
   return (
     <AppProvider app={app}>
@@ -34,7 +34,7 @@ export function App({ app }: PropsWithChildren<{ app: App }>) {
         <Listeners />
 
         <Frame>
-          <PannableArea>
+          <PannableArea component="svg">
             <ZoomableArea>
               <ElementsRenderer ids={roots} />
             </ZoomableArea>

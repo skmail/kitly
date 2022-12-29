@@ -1,6 +1,6 @@
 import { applyToPoints, getPointAtAngle, Point } from "@free-transform/core";
 import { ElementTransformationDetails, HandleProps } from "../../types";
-import { applyOffsetToPoints } from "./apply-offset";
+import { applyOffsetToPoint, applyOffsetToPoints } from "./apply-offset";
 import { applyZoomToPoints } from "./apply-zoom";
 
 interface Props {
@@ -19,10 +19,7 @@ export const getShapePoints = ({
   transformations,
   zoom = 1,
 }: Props) => {
-  const [sx, sy] = [
-    transformations?.disabledScale ? 1 : transformations.scale.sx,
-    transformations?.disabledScale ? 1 : transformations.scale.sy,
-  ];
+  const [sx, sy] = [transformations.scale.sx, transformations.scale.sy];
 
   const [signx, signy] = [
     Math.sign(transformations.scale.sx),
@@ -48,11 +45,6 @@ export const getShapePoints = ({
   let [x, y] = [__x * width, __y * height];
   let [w, h] = [handleWidth / sx, handleHeight / sy];
 
-  if (transformations.disabledScale) {
-    w *= signx;
-    h *= signy;
-  }
-
   const offset: [number, number] = [handleWidth / 2, handleHeight / 2];
 
   const _offset = getPointAtAngle(
@@ -70,7 +62,13 @@ export const getShapePoints = ({
     [x + w / zoom, y],
   ];
 
-  let point = applyToPoints(transformations.absoluteMatrix, points);
+  let point = applyToPoints(transformations.relativeMatrix, points);
 
-  return applyOffsetToPoints(applyZoomToPoints(point, zoom), _offset);
+  return applyOffsetToPoints(
+    applyZoomToPoints(
+      applyOffsetToPoints(point, transformations.worldPosition),
+      zoom
+    ),
+    _offset
+  );
 };

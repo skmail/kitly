@@ -17,10 +17,13 @@ export function DeleteListener() {
     if (!selected) {
       return;
     }
+
+    console.log("deleteing ..")
     app.useElementsStore.getState().select();
     app.useElementsStore.getState().hover();
 
-    app.useElementsStore.getState().deleteElement(selected);
+    app.elements.remove(selected);
+
     app.dom.workspace?.focus();
   }, [isDelete, app]);
   return null;

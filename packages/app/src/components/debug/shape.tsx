@@ -12,7 +12,7 @@ export function ShapeDebug() {
       return;
     }
 
-    const transformation = state.selectionTransformations.transformations;
+    const transformation = state.selectionTransformations;
 
     if (!transformation) {
       return [] as Point[];

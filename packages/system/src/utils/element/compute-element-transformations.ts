@@ -1,10 +1,5 @@
 import {
-  decompose,
-  makeWarpPoints,
   Matrix,
-  Point,
-  Tuple,
-  makePerspectiveMatrix,
   inverseAffine,
   multiply,
   matrixScale,
@@ -12,72 +7,59 @@ import {
   applyToPoints,
   minMax,
   toDegree,
+  decompose,
   wrapAngle,
+  Point,
 } from "@free-transform/core";
 
 import { Element, ElementTransformationDetails, Table } from "../../types";
+import { applyOffsetToPoint, applyOffsetToPoints } from "../point/apply-offset";
 
 export function computeElementTransformations(
-  element: Element
+  element: Element,
+  parentTransformations?: ElementTransformationDetails
 ): ElementTransformationDetails {
   const decomposedAffineMatrix = decompose(element.matrix);
 
-  const width = element.disabledScale
-    ? Math.abs(element.width * decomposedAffineMatrix.scale.sx)
-    : element.width;
+  const width = element.width;
+  const height = element.height;
 
-  const height = element.disabledScale
-    ? Math.abs(element.height * decomposedAffineMatrix.scale.sy)
-    : element.height;
-
-  let warpPoints: Tuple<Point, 4>;
-
-  if (!element.warp) {
-    warpPoints = makeWarpPoints(width, height);
-  } else if (element.disabledScale) {
-    warpPoints = element.warp.map((point) => [
-      point[0] * decomposedAffineMatrix.scale.sx,
-      point[1] * decomposedAffineMatrix.scale.sy,
-    ]) as Tuple<Point, 4>;
-  } else {
-    warpPoints = element.warp;
-  }
-
-  const perspectiveMatrix = makePerspectiveMatrix(
-    makeWarpPoints(width, height),
-    warpPoints
+  const rotationMatrix = multiply(
+    inverseAffine(
+      matrixScale(
+        decomposedAffineMatrix.scale.sx *
+          Math.sign(decomposedAffineMatrix.scale.sx),
+        decomposedAffineMatrix.scale.sy *
+          Math.sign(decomposedAffineMatrix.scale.sy)
+      )
+    ),
+    element.matrix
   );
 
-  let mat = element.matrix;
-
-  const inverted = inverseAffine(mat);
-  const decomposedInverted = decompose(inverted);
-
-  const invertedAffineMatrix = multiply(
-    mat,
-    matrixScale(
-      decomposedInverted.scale.sx * Math.sign(decomposedAffineMatrix.scale.sx),
-      decomposedInverted.scale.sy * Math.sign(decomposedAffineMatrix.scale.sy)
-    )
-  );
-
-  if (element.disabledScale) {
-    mat = invertedAffineMatrix;
-  }
-
-  let relativeMatrix: Matrix = multiply(mat, perspectiveMatrix);
+  // alias of original matrix, will be combined with perspectiveMatrix in the future
+  let relativeMatrix: Matrix = element.matrix;
 
   const absoluteMatrix = multiply(
     matrixTranslate(element.x, element.y),
     relativeMatrix
   );
 
-  const points = applyToPoints(absoluteMatrix, [
-    [0, 0],
-    [width, 0],
-    [width, height],
-    [0, height],
-  ]);
+  const worldPosition: Point = parentTransformations
+    ? [
+        parentTransformations.worldPosition[0],
+        parentTransformations.worldPosition[1],
+      ]
+    : [0, 0];
+
+  const points = applyOffsetToPoints(
+    applyToPoints(absoluteMatrix, [
+      [0, 0],
+      [width, 0],
+      [width, height],
+      [0, height],
+    ]),
+    worldPosition
+  );
 
   const bounds = minMax(points);
 
@@ -85,16 +67,11 @@ export function computeElementTransformations(
     id: element.id,
     x: element.x,
     y: element.y,
-    baseWidth: element.width,
-    baseHeight: element.height,
-
     width,
     height,
-    warp: warpPoints,
     affineMatrix: element.matrix,
-    invertedAffineMatrix,
-    perspectiveMatrix,
-    relativeMatrix: relativeMatrix,
+    rotationMatrix,
+    relativeMatrix,
     absoluteMatrix,
     scale: decomposedAffineMatrix.scale,
     rotation: {
@@ -106,26 +83,43 @@ export function computeElementTransformations(
     disabledScale: element.disabledScale,
     bounds,
     points,
+    worldPosition: applyOffsetToPoint(worldPosition, [element.x, element.y]),
   };
 }
 
-export function computeElementsTableTransformations(table: Table<Element>) {
-  let transformations: Record<string, ElementTransformationDetails> = {};
+export function computeElementsTableTransformations(
+  table: Table<Element>,
+  transformations: Record<string, ElementTransformationDetails> = {},
+  computeChildren = true
+) {
+  let currentTransformations: Record<string, ElementTransformationDetails> = {};
 
   for (let id of table.ids) {
-    transformations[id] = computeElementTransformations(table.items[id]);
+    currentTransformations = {
+      ...currentTransformations,
+      [id]: computeElementTransformations(
+        table.items[id],
+        transformations[table.items[id].parentId || ""]
+      ),
+    };
     const children = table.items[id].children;
-
-    if (children) {
-      transformations = {
-        ...transformations,
-        ...computeElementsTableTransformations({
-          ids: children,
-          items: table.items,
-        }),
+    if (children && computeChildren) {
+      currentTransformations = {
+        ...currentTransformations,
+        ...computeElementsTableTransformations(
+          {
+            ids: children,
+            items: table.items,
+          },
+          {
+            ...transformations,
+            ...currentTransformations,
+          },
+          computeChildren
+        ),
       };
     }
   }
 
-  return transformations;
+  return currentTransformations;
 }

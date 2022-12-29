@@ -10,7 +10,25 @@ import {
   multiselect,
   text,
   group,
+  frame,
+  manager,
 } from "@kitly/elements";
+
+function applyModifier<T extends App>(
+  app: T,
+  modifiers: ExtensionModifierDetailed[],
+  ...args: any[]
+) {
+  let lastValue: any;
+  for (let modifier of modifiers) {
+    const value = modifier.modifier(...args, app, lastValue);
+    if (value !== undefined) {
+      lastValue = value;
+    }
+  }
+
+  return lastValue;
+}
 import {
   App,
   ElementExtension,
@@ -21,7 +39,6 @@ import {
   Store,
   ExtensionModifier,
   ExtensionModifierDetailed,
-  ExtensionModifierCallback,
 } from "@kitly/system";
 
 const foreceDefaultModifier = (
@@ -36,8 +53,64 @@ const foreceDefaultModifier = (
   return modifier;
 };
 
-type AppExtensionsModifiersMap<T extends ExtensionModifier> = Map<string, T[]>;
+function createModifiers(app: App, extensions: Extension[]) {
+  const detailedModifiers: {
+    [key: string]: Record<string, ExtensionModifierDetailed[]>;
+  } = {};
 
+  for (let extension of extensions) {
+    if (extension.modifiers) {
+      for (let [target, modifiersTarget] of Object.entries(
+        extension.modifiers
+      )) {
+        for (let [action, modifierActions] of Object.entries(modifiersTarget)) {
+          if (!detailedModifiers[target]) {
+            detailedModifiers[target] = {};
+          }
+
+          if (!detailedModifiers[target][action]) {
+            detailedModifiers[target][action] = [];
+          }
+
+          const actions = detailedModifiers[target][action];
+
+          if (Array.isArray(modifierActions)) {
+            actions?.push(...modifierActions.map(foreceDefaultModifier));
+          } else {
+            actions?.push(foreceDefaultModifier(modifierActions));
+          }
+        }
+      }
+    }
+  }
+
+  const modifiers = Object.entries(detailedModifiers).reduce<any>(
+    (acc, [name, modifiers]) => {
+      return {
+        ...acc,
+        [name]: Object.entries(modifiers).reduce<Record<string, () => void>>(
+          (acc, [name, modifiers]) => {
+            modifiers = modifiers.sort(
+              (a, b) =>
+                (a as ExtensionModifierDetailed).priorty -
+                (b as ExtensionModifierDetailed).priorty
+            );
+
+            return {
+              ...acc,
+              [name]: (...args: any[]) =>
+                applyModifier(app, modifiers, ...args),
+            };
+          },
+          {}
+        ),
+      };
+    },
+    {}
+  );
+
+  return modifiers;
+}
 export function createApp(
   extensions: Extension[] = [
     elementHighlighter,
@@ -45,6 +118,8 @@ export function createApp(
     image,
     text,
     group,
+    frame,
+    manager,
   ]
 ): App {
   const raycasters: {
@@ -61,10 +136,6 @@ export function createApp(
   const ui: FC[] = [];
 
   let stores: Record<string, Store<any>> = {};
-
-  const detailedModifiers: {
-    [key: string]: ExtensionModifierDetailed[];
-  } = {};
 
   for (let extension of extensions) {
     if (extension.elements) {
@@ -90,43 +161,7 @@ export function createApp(
         ...extension.stores,
       };
     }
-    if (extension.modifiers) {
-      for (let [target, modifiersTarget] of Object.entries(
-        extension.modifiers
-      )) {
-        for (let [action, modifierActions] of Object.entries(modifiersTarget)) {
-          const key = `${target}.${action}`;
-
-          if (!detailedModifiers[key]) {
-            detailedModifiers[key] = [];
-          }
-          const actions = detailedModifiers[key];
-
-          if (Array.isArray(modifierActions)) {
-            actions?.push(...modifierActions.map(foreceDefaultModifier));
-          } else {
-            actions?.push(foreceDefaultModifier(modifierActions));
-          }
-        }
-      }
-    }
   }
-
-  const modifiers = Object.entries(detailedModifiers).reduce<App["modifiers"]>(
-    (acc, [name, modifiers]) => {
-      return {
-        ...acc,
-        [name]: modifiers
-          .sort(
-            (a, b) =>
-              (a as ExtensionModifierDetailed).priorty -
-              (b as ExtensionModifierDetailed).priorty
-          )
-          .map((modifier) => (modifier as ExtensionModifierDetailed).modifier),
-      };
-    },
-    {}
-  );
 
   const app = {
     stores,
@@ -143,19 +178,9 @@ export function createApp(
       raycasters,
       ui,
     },
-    modifiers,
-    applyModifier(name: string, ...args: any[]) {
-      if (!modifiers[name]) {
-        return;
-      }
-      let lastValue: any;
-      for (let modifier of modifiers[name]) {
-        lastValue = modifier(...args, app);
-      }
-
-      return lastValue;
-    },
   };
+
+  Object.assign(app, createModifiers(app, extensions));
 
   return app;
 }

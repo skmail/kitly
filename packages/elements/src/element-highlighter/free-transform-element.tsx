@@ -1,5 +1,5 @@
 import shallow from "zustand/shallow";
-import { ComponentProps, Fragment } from "react";
+import { ComponentProps, Fragment, memo } from "react";
 import classNames from "classnames";
 import {
   ElementTransformationDetails,
@@ -58,7 +58,7 @@ interface Props {
   allowChanges?: boolean;
 }
 
-export function FreeTransformElement({
+function _FreeTransformElement({
   transformations,
   offset = [0, 0],
   children,
@@ -66,6 +66,7 @@ export function FreeTransformElement({
   className,
   ...rest
 }: Props & ComponentProps<"div">) {
+
   const app = useApp();
 
   const [zoom, animateZoom] = app.useWorkspaceStore(
@@ -114,3 +115,6 @@ export function FreeTransformElement({
     </FreeTransform>
   );
 }
+
+
+export const FreeTransformElement = memo(_FreeTransformElement)
