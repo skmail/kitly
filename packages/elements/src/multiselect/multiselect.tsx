@@ -5,10 +5,9 @@ import {
   MouseButton,
   Point,
   satCollision,
-  round,
   Vec,
+  applyZoomToPoints,
 } from "@kitly/system";
-import { applyZoomToPoints } from "@kitly/system/src/utils/point/apply-zoom";
 import { throttle } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../../app/src/app-provider";

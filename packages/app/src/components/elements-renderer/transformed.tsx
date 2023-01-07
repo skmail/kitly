@@ -26,22 +26,11 @@ export function Transformed({
 
   return (
     <>
-      {clipContents && (
-        <defs>
-          <clipPath id={clipPathId}>
-            <rect
-              width={transformations.width}
-              height={transformations.height}
-            />
-          </clipPath>
-        </defs>
-      )}
       <g
         {...props}
         style={{
           ...styles,
           fill: "#fff",
-          clipPath: clipContents ? `url(#${clipPathId})` : undefined,
         }}
         transform={`matrix(${matrix3d})`}
       />

@@ -1,13 +1,7 @@
 import { Point } from "@kitly/system";
 import { TransformedElement } from "../transformed-element";
 
-export function ElementsRenderer({
-  ids,
-  offset = [0, 0],
-}: {
-  ids: string[];
-  offset?: Point;
-}) {
+export function ElementsRenderer({ ids }: { ids: string[] }) {
   return (
     <>
       {ids.map((id) => (

@@ -1,10 +1,17 @@
+import { GroupInfo } from "./group-info";
 import { HandleDebug } from "./handle";
 import { ShapeDebug } from "./shape";
 import { Wireframes } from "./wireframes";
 
 export function Debug() {
-  return null;
-  // return <Wireframes />;
+  return (
+    <>
+      <GroupInfo />
+      <Wireframes />
+    </>
+  );
+
+  // return null;
   // return <ShapeDebug />;
   // return <>{<HandleDebug />}</>;
 }

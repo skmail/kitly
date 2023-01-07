@@ -12,8 +12,9 @@ import {
   Point,
 } from "@free-transform/core";
 
-import { Element, ElementTransformationDetails, Table } from "../../types";
-import { applyOffsetToPoint, applyOffsetToPoints } from "../point/apply-offset";
+import { Element, ElementTransformationDetails, Table } from "../types";
+import { Vec } from "../vec";
+import { applyOffsetToPoints } from "../point/apply-offset";
 
 export function computeElementTransformations(
   element: Element,
@@ -62,7 +63,7 @@ export function computeElementTransformations(
   );
 
   const bounds = minMax(points);
-
+ 
   return {
     id: element.id,
     x: element.x,
@@ -83,7 +84,7 @@ export function computeElementTransformations(
     disabledScale: element.disabledScale,
     bounds,
     points,
-    worldPosition: applyOffsetToPoint(worldPosition, [element.x, element.y]),
+    worldPosition: Vec.add(worldPosition, [element.x, element.y]),
   };
 }
 

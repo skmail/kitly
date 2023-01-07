@@ -3,7 +3,7 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 import {
   Element,
-  computeElementTransformations, 
+  computeElementTransformations,
   ElementsState,
   identity,
   minMax,
@@ -39,7 +39,12 @@ export const useElementsStore = create(
         let selectionTransformations;
 
         if (ids.length === 1) {
-          selectionTransformations = state.transformations[ids[0]];
+          selectionTransformations = {
+            ...state.transformations[ids[0]],
+            id:"__selection__",
+            x: state.transformations[ids[0]].worldPosition[0],
+            y: state.transformations[ids[0]].worldPosition[1],
+          };
         } else if (ids.length > 1) {
           const data = ids.reduce<Point[]>((acc, id) => {
             const transformation = state.transformations[id];
@@ -83,7 +88,6 @@ export const useElementsStore = create(
 
     deleteElement: (ids) =>
       set((state) => {
-       
         for (let id of ids) {
           const parentId = state.elements[id].parentId;
           if (!parentId) {

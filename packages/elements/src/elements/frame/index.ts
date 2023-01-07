@@ -5,7 +5,9 @@ import {
   ElementsState,
   Extension,
 } from "@kitly/system";
+import { transform } from "../../element-highlighter/transform";
 import { TransformResult } from "../../element-highlighter/types";
+import { mergeResultToResult } from "../../element-highlighter/utils";
 import { Renderer } from "./renderer";
 import { FrameElement } from "./types";
 import { Watcher } from "./watcher";
@@ -19,21 +21,24 @@ export const frame: Extension = {
       // @ts-ignore
       renderer: Renderer,
       toString: () => "group string for now",
+      transformRenderrer: false,
       modifiers: {
         transform(
           element: FrameElement,
-          state: ElementsState
+          state: ElementsState,
+          prevState: ElementsState,
+          app: App
         ): TransformResult | void {
-          let result: TransformResult = {
-            elements: {},
-            transformations: computeElementsTableTransformations(
-              {
-                ids: element.children,
-                items: state.elements,
-              },
-              state.transformations
-            ),
-          };
+          let result = app.elements.transform(
+            element.children,
+            {
+              matrix: element.matrix,
+            },
+            {
+              ...prevState,
+              selectionTransformations: prevState.transformations[element.id],
+            }
+          );
 
           return result;
         },

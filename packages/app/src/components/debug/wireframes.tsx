@@ -1,5 +1,5 @@
 import { Box } from "@kitly/elements/src/element-highlighter/free-transform/box";
-import { applyZoomToPoints } from "@kitly/system/src/utils/point/apply-zoom";
+import { applyZoomToPoints } from "@kitly/system";
 
 import { useApp } from "../../app-provider";
 

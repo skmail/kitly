@@ -5,11 +5,10 @@ import {
   matrixTranslate,
   multiply,
   inverseAffine,
-  round,
   Point,
   decompose,
   matrixScale,
-  applyToPoint,
+  Vec,
 } from "@kitly/system";
 import { TransformResult } from "./types";
 
@@ -54,6 +53,7 @@ export function transform(
       disabledScale: selectionTransformations.disabledScale,
       ...payload,
     },
+
     state.transformations[
       state.elements[selectionTransformations.id || ""]?.parentId || ""
     ]
@@ -69,8 +69,10 @@ export function transform(
     if (selectionTransformations) {
       if (payload.matrix) {
         const translation: Point = [
-          selectionTransformations.x - element.x,
-          selectionTransformations.y - element.y,
+          selectionTransformations.worldPosition[0] -
+            state.transformations[id].worldPosition[0],
+          selectionTransformations.worldPosition[1] -
+            state.transformations[id].worldPosition[1],
         ];
 
         const inverse = inverseAffine(
@@ -89,6 +91,7 @@ export function transform(
 
           element.width +=
             Math.abs(element.width * dec.scale.sx) - element.width;
+
           element.height +=
             Math.abs(element.height * dec.scale.sy) - element.height;
 

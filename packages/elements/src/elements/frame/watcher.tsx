@@ -1,43 +1,17 @@
-import { useApp } from "@kitly/app";
-import { shallowEqual } from "@kitly/system";
-import { useEffect } from "react";
+import { useApp } from "@kitly/app"; 
 
 export function Watcher() {
   const app = useApp();
+  const pan = app.useWorkspaceStore((state) => state.pan);
 
-  useEffect(() => { 
-    return app.useElementsStore.subscribe(
-      (state) =>
-        state.selectionTransformations && {
-          relative:
-            state.selectionTransformations.affineMatrix,
-          x: state.selectionTransformations.x,
-          y: state.selectionTransformations.y,
-          id: state.selectionTransformations.id,
-        },
-      function (transformations, prev) {
-        if (!transformations) {
-          return;
-        }
-        const element =
-          app.useElementsStore.getState().elements[transformations.id];
-
-        if (!element) {
-          return;
-        }
-        if (element.type !== "group" || !element.children) {
-          return;
-        }
-
-        // console.log("update", transformations)
-        // app.useElementsStore.getState().update(element.children, {
-        //   matrix: transformations.relative,
-        // });
-      },
-      {
-        equalityFn: shallowEqual,
-      }
-    );
-  }, []);
-  return null;
+  return (
+    <>
+      <div
+        className="bg-violet-500 w-full h-px fixed"
+        style={{
+          left: -pan[0],
+        }}
+      />
+    </>
+  );
 }

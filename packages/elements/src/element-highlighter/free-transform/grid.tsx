@@ -1,6 +1,5 @@
-import { minMax, applyToPoints, applyToPoint } from "@free-transform/core";
-import { applyZoomToPoints } from "@kitly/system/src/utils/point/apply-zoom";
-import { useEffect, useMemo } from "react";
+import { applyZoomToPoints } from "@kitly/system";
+import { useMemo } from "react";
 import { useFreeTransform } from ".";
 import { Box } from "./box";
 export interface Props {
@@ -12,11 +11,9 @@ export interface Props {
 
 export function Grid({
   strokeWidth = 1,
-  lines = 2,
   fill = "none",
   stroke = "#000",
-}: Props) { 
-
+}: Props) {
   const { transformations, zoom } = useFreeTransform();
 
   // const svg = useMemo(() => {
@@ -81,5 +78,12 @@ export function Grid({
     [transformations.points, zoom]
   );
 
-  return <Box strokeWidth={strokeWidth} points={points} fill={fill} stroke={stroke} />;
+  return (
+    <Box
+      strokeWidth={strokeWidth}
+      points={points}
+      fill={fill}
+      stroke={stroke}
+    />
+  );
 }

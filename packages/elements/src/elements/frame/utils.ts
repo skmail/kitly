@@ -9,10 +9,6 @@ import {
   multiply,
   Point,
 } from "@kitly/system";
-import {
-  applyOffsetToPoint,
-  applyOffsetToPoints,
-} from "@kitly/system/src/utils/point/apply-offset";
 
 interface ElementTree extends Exclude<Element, "children"> {
   children?: ElementTree[];

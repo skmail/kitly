@@ -1,17 +1,13 @@
-import {
-  useMemo,
-  PointerEvent as ReactPointerEvent,
-  ComponentProps,
-} from "react";
+import { useMemo, ComponentProps } from "react";
 import { useFreeTransform } from ".";
 import {
   applyToPoint,
   getPointAtAngle,
   toDegree,
   Point,
-} from "@free-transform/core";
-import { applyZoomToPoint } from "@kitly/system/src/utils/point/apply-zoom";
-import { applyOffsetToPoint } from "@kitly/system/src/utils/point/apply-offset";
+  applyZoomToPoint,
+  applyOffsetToPoint,
+} from "@kitly/system";
 
 interface Props {
   position: [number, number];

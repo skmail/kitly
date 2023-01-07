@@ -9,16 +9,7 @@ export const Renderer = ({
 }) => {
   return (
     <>
-      <image
-        href={element.src}
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          width: element.width,
-          height: element.height,
-        }}
-      />
+      <image href={element.src} width={element.width} height={element.height} />
     </>
   );
 };

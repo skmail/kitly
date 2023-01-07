@@ -9,12 +9,8 @@ import {
   minMax,
   multiply,
   Point,
-} from "@kitly/system";
-import {
-  applyOffsetToPoint,
   applyOffsetToPoints,
-} from "@kitly/system/src/utils/point/apply-offset";
-import { group } from ".";
+} from "@kitly/system";
 
 interface ElementTree extends Exclude<Element, "children"> {
   children?: ElementTree[];
@@ -81,10 +77,23 @@ export function fitGroupTree(
         ]);
   });
 
+  const position = calculateTransformations(
+    element,
+    points,
+    transformations?.[element.id]
+  );
+
   return {
     ...element,
-    children,
-    ...calculateTransformations(element, points, transformations?.[element.id]),
+    children: children.map((child) => {
+      return {
+        ...child,
+        x: child.x - position.x,
+        y: child.y - position.y,
+      };
+    }),
+
+    ...position,
   };
 }
 
@@ -136,33 +145,39 @@ export function fitElementParents(
   id: string,
   elements: Record<string, Element>,
   transformations?: Record<string, ElementTransformationDetails>
-): Record<string, Element> {
-  const parentId = elements[id].parentId;
+): {
+  elements: Record<string, Element>;
+  root?: string;
+} {
+  const element = elements[id];
+  const parentId = element.parentId;
 
   if (!parentId) {
-    return {};
+    return {
+      elements: {},
+    };
   }
 
   const parent = elements[parentId];
   if (!parent.children) {
-    return {};
+    return {
+      elements: {},
+    };
   }
 
   const result: Record<string, Element> = {};
 
   if (parent.type === "group") {
     const points = parent.children.flatMap((id) => {
-      return transformations?.[id]
-        ? transformations[id].points
-        : applyOffsetToPoints(
-            applyToPoints(elements[id].matrix, [
-              [0, 0],
-              [elements[id].width, 0],
-              [elements[id].width, elements[id].height],
-              [0, elements[id].height],
-            ]),
-            [elements[id].x, elements[id].y]
-          );
+      return applyOffsetToPoints(
+        applyToPoints(elements[id].matrix, [
+          [0, 0],
+          [elements[id].width, 0],
+          [elements[id].width, elements[id].height],
+          [0, elements[id].height],
+        ]),
+        [parent.x + elements[id].x, parent.y + elements[id].y]
+      );
     });
     result[parentId] = {
       ...parent,
@@ -170,11 +185,25 @@ export function fitElementParents(
     };
   }
 
-  return {
+  for (let child of parent.children) {
+    const element = elements[child];
+    result[element.id] = {
+      ...element,
+      x: elements[child].x + parent.x - result[parentId].x,
+      y: elements[child].y + parent.y - result[parentId].y,
+    };
+  }
+
+  const parentresult = fitElementParents(parentId, {
+    ...elements,
     ...result,
-    ...fitElementParents(parentId, {
-      ...elements,
+  });
+
+  return {
+    elements: {
       ...result,
-    }),
+      ...parentresult.elements,
+    },
+    root: parentresult.root || parentId,
   };
 }

@@ -17,8 +17,7 @@ export function DeleteListener() {
     if (!selected) {
       return;
     }
-
-    console.log("deleteing ..")
+ 
     app.useElementsStore.getState().select();
     app.useElementsStore.getState().hover();
 

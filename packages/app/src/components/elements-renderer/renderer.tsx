@@ -33,14 +33,6 @@ export function Renderer({
     return null;
   }
 
-  if (render) {
-    rendered = <Renderer element={element} />;
-  }
-
-  if (extension.transformRenderrer === false) {
-    return rendered;
-  }
-
   // eslint-disable-next-line react-hooks/rules-of-hooks
   transformations = useMemo(() => {
     if (transformations) {
@@ -49,11 +41,17 @@ export function Renderer({
     return computeElementTransformations(element);
   }, [transformations, element]);
 
+  if (render) {
+    rendered = <Renderer transformations={transformations} element={element} />;
+  }
+
+  if (extension.transformRenderrer === false) {
+    return rendered;
+  }
+
   return (
-    <Transformed style={{}} transformations={transformations} {...rest}>
+    <Transformed transformations={transformations} {...rest}>
       {rendered}
     </Transformed>
   );
 }
-
-

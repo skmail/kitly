@@ -5,7 +5,8 @@
   "types": "./src/index.ts",
   "license": "MIT",
   "scripts": {
-    "lint": "TIMING=1 eslint \"**/*.ts*\""
+    "lint": "TIMING=1 eslint \"**/*.ts*\"",
+    "test:watch": "jest --watchAll"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
@@ -16,6 +17,7 @@
   },
   "dependencies": {
     "@kitly/app": "^0.0.0",
+    "@kitly/config": "^0.0.0",
     "@kitly/system": "^0.0.0",
     "@types/lodash-es": "^4.17.6",
     "lodash-es": "^4.17.21",

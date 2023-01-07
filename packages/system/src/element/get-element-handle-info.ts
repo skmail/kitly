@@ -6,7 +6,7 @@ import {
   toRadians,
   wrapAngle,
 } from "@free-transform/core";
-import { ElementTransformationDetails } from "../../types";
+import { ElementTransformationDetails } from "../types";
 
 interface Props {
   handle: [number, number];

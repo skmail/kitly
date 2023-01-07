@@ -1,4 +1,5 @@
 import { Point, round } from "@free-transform/core";
+import { clamp } from "./clamp";
 
 export const Vec = {
   round(vec: Point, precision?: number): Point {
@@ -39,5 +40,9 @@ export const Vec = {
 
   abs(vec: Point): Point {
     return [Math.abs(vec[0]), Math.abs(vec[1])];
+  },
+
+  clamp(point: Point, min: number, max: number): Point {
+    return [clamp(point[0], min, max), clamp(point[1], min, max)];
   },
 };

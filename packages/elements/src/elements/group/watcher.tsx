@@ -28,11 +28,6 @@ export function Watcher() {
         if (element.type !== "group" || !element.children) {
           return;
         }
-
-        // console.log("update", transformations)
-        // app.useElementsStore.getState().update(element.children, {
-        //   matrix: transformations.relative,
-        // });
       },
       {
         equalityFn: shallowEqual,

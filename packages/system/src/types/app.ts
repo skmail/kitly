@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { OnElementUpdate, Element } from ".";
+import { OnElementUpdate, Element, ElementTransformationDetails } from ".";
 import { Spread } from "./internals";
 import {
   ElementsState,
@@ -88,6 +88,7 @@ export type ElementExtension = {
   name: string;
   renderer: FC<{
     element: Element;
+    transformations: ElementTransformationDetails;
   }>;
   toString(element: Element, app: App): string;
   transformRenderrer: false;

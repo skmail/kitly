@@ -1,41 +1,18 @@
 import { App, Element } from "@kitly/system";
-import { transform } from "../transform";
-import { mergeResultToResult, mergeResultToState } from "../utils";
+import { TransformResult } from "../types";
 
-export function update(ids: string[], payload: Partial<Element>, app: App) {
-  console.log("update")
-  let state = app.useElementsStore.getState();
-  const originalState = state;
+export function update(
+  ids: string[],
+  payload: Partial<Element>,
+  app: App,
+  updates: any
+) {
+  const state = app.useElementsStore.getState();
 
-  let result = transform(ids, payload, state);
+  const result = app.elements.transform(ids, payload, state) as TransformResult;
 
-  state = mergeResultToState(result, state);
-
-  for (let id of ids) {
-    const element = state.elements[id];
-    const extension = app.extensions.elements.get(element.type);
-
-    if (extension?.modifiers?.transform) {
-      const extensionResults = extension.modifiers?.transform(
-        element,
-        state,
-        originalState
-      );
-      if (extensionResults !== undefined) {
-        // the root selectionTransformations shouldn't be replaced
-        // with any inner transformations
-        const { selectionTransformations, ...rest } = extensionResults;
-        result = mergeResultToResult(rest, result);
-        state = mergeResultToState(result, state);
-      }
-    }
-
-    const appModifiersResult = app.elements.onTransform(id, state);
-
-    if (appModifiersResult !== undefined) {
-      result = mergeResultToResult(appModifiersResult, result);
-      state = mergeResultToState(result, state);
-    }
+  if (!result) {
+    return;
   }
 
   Object.values(result.transformations).map((transform) => {

@@ -1,11 +1,15 @@
-import { ElementsState, Extension, App, Element } from "@kitly/system";
-import { transform } from "../../element-highlighter/transform";
+import {
+  ElementsState,
+  Extension,
+  App,
+  multiply,
+  matrixScale,
+} from "@kitly/system";
 import { TransformResult } from "../../element-highlighter/types";
-import { mergeResultToResult } from "../../element-highlighter/utils";
 import { Renderer } from "./renderer";
 import { GroupElement } from "./types";
 import { Watcher } from "./watcher";
-import { onTransform } from "./modifiers/on-transform";
+import { onTransformEnd } from "./modifiers/on-transform";
 import { onSelectionFilter } from "./modifiers/on-selection-filter";
 export const group: Extension = {
   ui: Watcher,
@@ -21,32 +25,25 @@ export const group: Extension = {
         transform(
           element: GroupElement,
           state: ElementsState,
-          prevState: ElementsState
+          prevState: ElementsState,
+          app: App
         ): TransformResult | void {
-          if (element.type !== "group") {
-            return;
-          }
-          let result = transform(element.children, element, {
-            ...prevState,
-            selectionTransformations: prevState.transformations[element.id],
-          });
-
-          for (let id of element.children) {
-            const child = state.elements[id];
-
-            if (child.type !== "group" || !child.children?.length) {
-              continue;
+          let result = app.elements.transform(
+            element.children,
+            { 
+              matrix: multiply(
+                element.matrix,
+                matrixScale(
+                  element.width / prevState.transformations[element.id].width,
+                  element.height / prevState.transformations[element.id].height
+                )
+              ),
+            },
+            {
+              ...prevState,
+              selectionTransformations: prevState.transformations[element.id],
             }
-
-            result = mergeResultToResult(
-              transform(child.children, result.elements[child.id], {
-                ...prevState,
-                selectionTransformations: prevState.transformations[child.id],
-              }),
-              result
-            );
-          }
-
+          );
           return result;
         },
       },
@@ -70,8 +67,11 @@ export const group: Extension = {
     },
     elements: {
       onSelectionFilter,
-      onTransform,
+      onTransformEnd,
     },
+  },
+  raycast: {
+    post(ray, app) {},
   },
 };
 

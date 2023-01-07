@@ -1,5 +1,5 @@
 import { applyToPoints, getPointAtAngle, Point } from "@free-transform/core";
-import { ElementTransformationDetails, HandleProps } from "../../types";
+import { ElementTransformationDetails, HandleProps } from "../types";
 import { applyOffsetToPoint, applyOffsetToPoints } from "./apply-offset";
 import { applyZoomToPoints } from "./apply-zoom";
 

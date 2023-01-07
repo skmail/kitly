@@ -65,9 +65,12 @@ export function SelectionTransform() {
   useEffect(() => {
     if (mouse.button !== MouseButton.LEFT || !ray || !mouse.isDown) {
       transformer.current = undefined;
-      startPosition.current = undefined;
+      startPosition.current = undefined;  
       if (app.stores.useTransformStore.getState().isTransforming) {
         app.stores.useTransformStore.getState().setTransform(false);
+        app.elements?.onTransformEnd?.(
+          app.useElementsStore.getState().selected
+        );
       }
       return;
     }

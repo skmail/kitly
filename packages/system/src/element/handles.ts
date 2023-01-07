@@ -1,5 +1,5 @@
 import { Point } from "@free-transform/core";
-import { HandleProps } from "../../types";
+import { HandleProps } from "../types";
 
 const getHandle = (
   type: HandleProps["type"],

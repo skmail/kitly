@@ -13,16 +13,11 @@ const getIds = (ids: string[], state: ElementsState) => {
 };
 
 export function remove(ids: string[], app: App) {
-
-  console.log("started ...")
   const state = app.useElementsStore.getState();
   ids = getIds(ids, state);
 
   state.deleteElement(ids);
-
-  console.log(
-    state.spatialTree
-  )
+ 
   for (let id of ids) {
     state.spatialTree.remove(
       {

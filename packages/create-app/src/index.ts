@@ -20,8 +20,14 @@ function applyModifier<T extends App>(
   ...args: any[]
 ) {
   let lastValue: any;
-  for (let modifier of modifiers) {
-    const value = modifier.modifier(...args, app, lastValue);
+  for (let i = 0; i < modifiers.length; i++) {
+    const modifier = modifiers[i];
+    const value = modifier.modifier(
+      ...args,
+      app,
+      lastValue,
+      i === modifiers.length - 1
+    );
     if (value !== undefined) {
       lastValue = value;
     }

@@ -1,6 +1,5 @@
 import { Point } from "@kitly/system";
-import { applyOffsetToPoints } from "@kitly/system/src/utils/point/apply-offset";
-import { applyZoomToPoints } from "@kitly/system/src/utils/point/apply-zoom";
+import { applyZoomToPoints } from "@kitly/system";
 import { useApp } from "../../app-provider";
 
 export function ShapeDebug() {
