@@ -45,7 +45,7 @@ const buildTree = (
 ) => {
   const relationships: Record<string, TreeNode> = {};
   const nodes: TreeNode[] = [];
-
+  const hasFullTree: Record<string, boolean> = {};
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
     const parentId = elements[item.id].parentId;
@@ -56,12 +56,27 @@ const buildTree = (
     }
 
     if (parentId) {
-      if (!relationships[parentId]) {
-        relationships[parentId] = {
-          id: parentId,
-          children: [],
-        };
+      if (!hasFullTree[parentId]) {
+        let parent: string | undefined = parentId;
+        while (parent) {
+          if (!relationships[parent]) {
+            relationships[parent] = {
+              id: parent,
+              children: [],
+            };
+          }
+          hasFullTree[parentId] = true;
+          parent = elements[parent]?.parentId;
+          if (!parent) {
+            if (indexes[parentId]) {
+              nodes.splice(indexes[node.id], 0, node);
+            } else {
+              nodes.push(relationships[parentId]);
+            }
+          }
+        }
       }
+
       relationships[parentId].children.splice(indexes[node.id], 0, node);
     }
 
@@ -78,15 +93,12 @@ const buildTree = (
 export function raycastElements(mouse: Point, app: App) {
   const state = app.useElementsStore.getState();
 
-  const results = app.useElementsStore
-    .getState()
-    .spatialTree.search({
-      minX: mouse[0],
-      minY: mouse[1],
-      maxX: mouse[0] + 15,
-      maxY: mouse[1] + 15,
-    })
-    .slice(0);
+  const results = app.useElementsStore.getState().spatialTree.search({
+    minX: mouse[0],
+    minY: mouse[1],
+    maxX: mouse[0] + 15,
+    maxY: mouse[1] + 15,
+  });
 
   const indexes = results.reduce<Record<string, number>>((acc, item) => {
     const element = state.elements[item.id];

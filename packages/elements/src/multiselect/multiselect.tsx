@@ -60,7 +60,7 @@ function InternalMultiselect() {
       const transformations = app.useElementsStore.getState().transformations;
       const itemsBounds: Point[][] = [];
       const ids = results.map((result) => result.id);
-      const newIds = app.elements.filterSelections(ids);
+      const newIds = app.elements.filterSelections(ids, collisionPoints);
 
       selections.current = [];
       for (let id of newIds) {

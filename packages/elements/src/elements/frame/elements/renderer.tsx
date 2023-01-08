@@ -1,4 +1,4 @@
-import { FrameElement } from "./types";
+import { FrameElement } from "../types";
 import {
   ElementTransformationDetails,
   Matrix,
@@ -45,7 +45,7 @@ export const Renderer = ({
             width={transformations.width}
             height={transformations.height}
             transform={transform}
-            fill="white"
+            
           />
         </clipPath>
       </defs>
@@ -58,7 +58,7 @@ export const Renderer = ({
           width={transformations.width}
           height={transformations.height}
           transform={transform}
-          fill="white"
+          fill={element.fill || "white"}
         />
         <ElementsRenderer ids={element.children} />
       </g>

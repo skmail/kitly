@@ -4,5 +4,4 @@ module.exports = {
     transpilePackages: ["@kitly/app", "@kitly/create-app"],
   },
   productionBrowserSourceMaps: true,
-
 };

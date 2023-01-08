@@ -1,4 +1,4 @@
-import { App, Element, ElementsState } from "@kitly/system";
+import { App, Element, ElementsState, Point } from "@kitly/system";
 const getIds = (
   element: Element,
   state: ElementsState
@@ -31,6 +31,7 @@ const getIds = (
 export function onSelectionFilter(
   id: string,
   selections: string[],
+  collisionPoints: Point[],
   app: App,
   lastSelections: string[]
 ) {
@@ -47,8 +48,8 @@ export function onSelectionFilter(
   const selectionsWithoutChildren = selections.filter((id) => !ids[id]);
 
   if (selectionsWithoutChildren.length !== selections.length) {
-    return selectionsWithoutChildren
+    return selectionsWithoutChildren;
   }
 
-  return selectionsWithoutChildren.filter(id => id !== element.id)
+  return selectionsWithoutChildren.filter((id) => id !== element.id);
 }

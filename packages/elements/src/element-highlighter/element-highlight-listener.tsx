@@ -16,7 +16,7 @@ export const ElementHighlightListener = () => {
     (state) => [state.isDown, state.mouse],
     shallowEqual
   );
-
+ 
   useEffect(() => { 
     if (
       ray?.type === "selection" ||

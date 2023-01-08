@@ -52,6 +52,42 @@ export default function Web() {
         type: "frame",
         children: [
           {
+            id: "framex2",
+            x: 0,
+            y: 0,
+            disabledScale: true,
+            matrix: [
+              [1, 0, 0, 0],
+              [0, 1, 0, 0],
+              [0, 0, 1, 0],
+              [0, 0, 0, 1],
+            ],
+            width: 100,
+            height: 100,
+            type: "frame",
+            fill: "red",
+            children:[
+
+
+              {
+                id: "laptop-framex",
+                x: 15,
+                y: 15,
+                matrix: [
+                  [1, 0, 0, 0],
+                  [0, 1, 0, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 1],
+                ],
+                width: 50,
+                height: 50,
+                type: "image",
+                src: "https://images.unsplash.com/photo-1664574654578-d5a6a4f447bb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
+              },
+
+            ]
+          },
+          {
             id: "laptop-frame",
             x: 500,
             y: 15,
@@ -113,7 +149,6 @@ export default function Web() {
             text: "Welcome ...",
             disabledScale: true,
           },
-
         ],
       }),
 
@@ -133,8 +168,8 @@ export default function Web() {
         children: [
           {
             id: "groupx",
-            x: 0,
-            y: 0,
+            x: 400,
+            y: 400,
             matrix: [
               [1, 0, 0, 0],
               [0, 1, 0, 0],
@@ -170,8 +205,8 @@ export default function Web() {
           },
           {
             id: "group-text",
-            x: 0,
-            y: 0,
+            x: 400,
+            y: 400,
             // disabledScale: true,
             matrix: [
               [1, 0, 0, 0],
