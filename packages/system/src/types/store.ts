@@ -30,12 +30,18 @@ export interface KeyboardState {
 export interface MouseState {
   mouse: Point;
   setMouse: (x: number, y: number) => void;
-  setMouseDown: (isDown?: boolean) => void;
 
   button: MouseButtonType;
   setButton: (button: MouseButtonType) => void;
 
   isDown: boolean;
+  setMouseDown: (isDown?: boolean) => void;
+
+  isClick: boolean;
+  setClick: (isClick?: boolean) => void;
+
+  isDoubleClick: boolean;
+  setDoubleClick: (isDoubleClick?: boolean) => void;
 
   inWorkspace: boolean;
   setInsideWorkspace: (inWorkspace: boolean) => void;
@@ -60,9 +66,8 @@ export interface ElementsState {
 }
 
 export interface RaycastState {
-  ray?: Raycastable;
-  stack: Raycastable[];
-  setRay: (raycastable?: Raycastable, stack?: Raycastable[]) => void;
+  rays: Raycastable[];
+  setRays: (raycastables: Raycastable[]) => void;
 }
 
 type RulerState = {

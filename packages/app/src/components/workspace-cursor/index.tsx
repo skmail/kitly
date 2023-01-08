@@ -15,7 +15,7 @@ export function WorkspaceCursor() {
   const app = useApp();
 
   const ray = app.useRaycastStore(
-    (state) => state.ray as HandleRaycastResult | ElementRaycastResult,
+    (state) => state.rays[0] as HandleRaycastResult | ElementRaycastResult,
     shallowEqual
   );
   const mouse = app.useMouseStore((state) => state.mouse, shallowEqual);

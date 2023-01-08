@@ -139,7 +139,13 @@ export function createApp(
   };
 
   const elements = new Map<string, ElementExtension>();
-  const ui: FC[] = [];
+  const ui: {
+    pannable: FC[];
+    static: FC[];
+  } = {
+    pannable: [],
+    static: [],
+  };
 
   let stores: Record<string, Store<any>> = {};
 
@@ -158,8 +164,11 @@ export function createApp(
     if (extension.raycast?.post) {
       raycasters.post.push(extension.raycast?.post);
     }
-    if (extension.ui) {
-      ui.push(extension.ui);
+    if (extension.ui?.pannable) {
+      ui.pannable.push(extension.ui.pannable);
+    }
+    if (extension.ui?.static) {
+      ui.static.push(extension.ui.static);
     }
     if (extension.stores) {
       stores = {

@@ -3,7 +3,7 @@ import { HoverHighlighter } from "./hover-highlighter";
 import { SelectionTransform } from "./selection-transform";
 import { ElementHighlightListener } from "./element-highlight-listener";
 import { useTransformStore } from "./transform-store";
-import { ExtensionDefinition } from "./types";
+import { ElementHighlighterExtension } from "./types";
 import { validate } from "./raycast-validation";
 import { update } from "./modifiers/update";
 import { _transform } from "./modifiers/transform";
@@ -18,8 +18,11 @@ function ElementHighlighter() {
   );
 }
 
-export const elementHighlighter: ExtensionDefinition = {
-  ui: ElementHighlighter,
+export const elementHighlighter: ElementHighlighterExtension = {
+  ui: {
+    pannable: ElementHighlighter,
+  },
+
   stores: {
     useTransformStore,
   },

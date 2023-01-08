@@ -26,15 +26,12 @@ export type Raycastable<T = string> = {
   type: T;
 };
 
-export type Raycaster = <T extends App = App>(app: T) => Raycastable | void;
+export type Raycaster = <T extends App = App>(app: T) => Raycastable[] | void;
 export type RaycastValidator = <T extends App = App>(app: T) => boolean | void;
 export type RaycastPost = <T extends App = App>(
-  result: {
-    ray: Raycastable;
-    stack: Raycastable[];
-  },
+  rays: Raycastable[],
   app: T
-) => boolean | Raycastable | void;
+) => Raycastable[] | void;
 
 export type App<E extends Extension[] = Extension[]> = {
   stores: Spread<[ParseExtensions<E>, {}]>;
@@ -53,7 +50,10 @@ export type App<E extends Extension[] = Extension[]> = {
       validators: RaycastValidator[];
       post: RaycastPost[];
     };
-    ui: FC[];
+    ui: {
+      pannable: FC[];
+      static: FC[];
+    };
   };
   [key: string]: any;
 };
@@ -75,7 +75,10 @@ export type Extension = {
     raycast?: Raycaster;
     post?: RaycastPost;
   };
-  ui?: FC;
+  ui?: {
+    pannable?: FC;
+    static?: FC;
+  };
   stores?: Record<string, Store<any>>;
   modifiers?: {
     [key: string]: {

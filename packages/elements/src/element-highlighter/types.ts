@@ -7,7 +7,7 @@ import {
 } from "@kitly/system";
 import { TransformState } from "./transform-store";
 
-export interface ExtensionDefinition extends Extension {
+export interface ElementHighlighterExtension extends Extension {
   stores: {
     useTransformStore: Store<TransformState>;
   };

@@ -42,7 +42,7 @@ export function App({ app }: PropsWithChildren<{ app: App }>) {
         </Frame>
 
         <PannableArea>
-          {app.extensions.ui.map((UI, index) => (
+          {app.extensions.ui.pannable.map((UI, index) => (
             <UI key={index} />
           ))}
           <Debug />
@@ -50,6 +50,10 @@ export function App({ app }: PropsWithChildren<{ app: App }>) {
 
         <WorkspaceCursor />
         <Rulers />
+
+        {app.extensions.ui.static.map((UI, index) => (
+          <UI key={index} />
+        ))}
 
         <div className="absolute inset-0 w-full h-full" />
       </DropLayer>

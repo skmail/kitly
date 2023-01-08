@@ -16,10 +16,10 @@ import { usePrevious } from "../../../app/src/hooks/usePrevious";
 import { RaycastResult } from "../types";
 
 import { FreeTransformElement } from "./free-transform-element";
-import { ExtensionDefinition } from "./types";
+import { ElementHighlighterExtension } from "./types";
 
 export function SelectionTransform() {
-  const app = useApp<App<[ExtensionDefinition]>>();
+  const app = useApp<[ElementHighlighterExtension]>();
 
   const selectionTransformations = app.useElementsStore(
     (state) => state.selectionTransformations,
@@ -29,7 +29,7 @@ export function SelectionTransform() {
   const offset = app.useWorkspaceStore((state) => state.offset, shallowEqual);
 
   const ray = app.useRaycastStore(
-    (state) => state.ray as RaycastResult,
+    (state) => state.rays[0] as RaycastResult,
     shallowEqual
   );
 

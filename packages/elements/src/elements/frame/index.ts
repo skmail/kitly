@@ -1,19 +1,26 @@
-import {
-  App,
-  computeElementsTableTransformations,
-  Element,
-  ElementsState,
-  Extension,
-} from "@kitly/system";
-import { transform } from "../../element-highlighter/transform";
+import { App, ElementsState, Extension } from "@kitly/system";
 import { TransformResult } from "../../element-highlighter/types";
-import { mergeResultToResult } from "../../element-highlighter/utils";
 import { Renderer } from "./renderer";
 import { FrameElement } from "./types";
 import { Watcher } from "./watcher";
 
+const getIds = (id: string, elements: ElementsState["elements"]): string[] => {
+  const ids: string[] = [];
+  const element = elements[id];
+  if (element.children) {
+    ids.push(...element.children);
+    for (const id of element.children) {
+      ids.push(...getIds(id, elements));
+    }
+  }
+
+  return ids;
+};
+
 export const frame: Extension = {
-  ui: Watcher,
+  ui: {
+    static: Watcher,
+  },
   elements: [
     {
       name: "frame",
@@ -54,26 +61,14 @@ export const frame: Extension = {
         lastSelections: string[]
       ) {
         selections = lastSelections || selections;
-        const element = app.useElementsStore.getState().elements[id];
+        const elements = app.useElementsStore.getState().elements;
+        const element = elements[id];
 
         if (element.type !== "frame") {
           return;
         }
-        const getIds = (element: Element): string[] => {
-          const ids: string[] = [];
 
-          if (element.children) {
-            ids.push(...element.children);
-            for (let id of element.children) {
-              const child = app.useElementsStore.getState().elements[id];
-              ids.push(...getIds(child));
-            }
-          }
-
-          return ids;
-        };
-
-        const ids = getIds(element);
+        const ids = getIds(element.id, elements);
 
         return selections.filter((id) => !ids.includes(id));
       },

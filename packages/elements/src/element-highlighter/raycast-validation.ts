@@ -1,7 +1,7 @@
 import { App } from "@kitly/system";
-import { ExtensionDefinition } from "./types";
+import { ElementHighlighterExtension } from "./types";
 
-export function validate(app: App<[ExtensionDefinition]>) {
+export function validate(app: App<[ElementHighlighterExtension]>) {
   const { isSelecting, isTransforming } =
     app.stores.useTransformStore.getState();
 

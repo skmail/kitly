@@ -4,7 +4,7 @@ import {
   shallowEqual,
   MouseButton,
   Point,
-  satCollision,
+  Collision,
   Vec,
   applyZoomToPoints,
 } from "@kitly/system";
@@ -12,7 +12,7 @@ import { throttle } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../../../app/src/app-provider";
 import { Box } from "../element-highlighter/free-transform/box";
-import { ExtensionDefinition } from "../element-highlighter/types";
+import { ElementHighlighterExtension } from "../element-highlighter/types";
 
 type Bounds = {
   position: Point;
@@ -24,7 +24,7 @@ function InternalMultiselect() {
   );
   const [selectionBoxes, setSelectionBoxes] = useState<Point[][]>([]);
 
-  const app = useApp<App<[ExtensionDefinition]>>();
+  const app = useApp<[ElementHighlighterExtension]>();
   const zoom = app.useWorkspaceStore((state) => state.zoom);
   const mouse = app.useMouseStore<Point>((state) => state.mouse, shallowEqual);
   const button = app.useMouseStore((state) => state.button, shallowEqual);
@@ -65,7 +65,7 @@ function InternalMultiselect() {
       selections.current = [];
       for (let id of newIds) {
         const transformation = transformations[id];
-        if (!satCollision(collisionPoints, transformation.points)) {
+        if (!Collision.points(collisionPoints, transformation.points)) {
           continue;
         }
         itemsBounds.push(applyZoomToPoints(transformation.points, zoom));
@@ -102,6 +102,9 @@ function InternalMultiselect() {
       position[1] = position[1] - height;
     }
 
+    if (height < 1 && width < 1) {
+      return;
+    }
     setSelectionBoundaries({
       position,
       size: [width, height],
@@ -167,9 +170,9 @@ function InternalMultiselect() {
   );
 }
 export function Multiselect() {
-  const app = useApp<App<[ExtensionDefinition]>>();
+  const app = useApp<[ElementHighlighterExtension]>();
   const isDown = app.useMouseStore(
-    (state) => state.isDown && !app.useRaycastStore.getState().ray
+    (state) => state.isDown && !app.useRaycastStore.getState().rays[0]
   );
 
   useEffect(() => {

@@ -1,12 +1,27 @@
 import { App, Element, ElementsState } from "@kitly/system";
-const getIds = (element: Element, state: ElementsState): string[] => {
-  const ids: string[] = [];
+const getIds = (
+  element: Element,
+  state: ElementsState
+): Record<string, string> => {
+  let ids: Record<string, string> = {};
 
   if (element.children) {
-    ids.push(...element.children);
+    ids = {
+      ...ids,
+      ...element.children.reduce(
+        (acc, id) => ({
+          ...acc,
+          [id]: id,
+        }),
+        {}
+      ),
+    };
     for (let id of element.children) {
       const child = state.elements[id];
-      ids.push(...getIds(child, state));
+      ids = {
+        ...ids,
+        ...getIds(child, state),
+      };
     }
   }
 
@@ -21,7 +36,6 @@ export function onSelectionFilter(
 ) {
   selections = lastSelections || selections;
   const state = app.useElementsStore.getState();
-
   const element = state.elements[id];
 
   if (element.type !== "group") {
@@ -30,5 +44,11 @@ export function onSelectionFilter(
 
   const ids = getIds(element, state);
 
-  return selections.filter((id) => !ids.includes(id));
+  const selectionsWithoutChildren = selections.filter((id) => !ids[id]);
+
+  if (selectionsWithoutChildren.length !== selections.length) {
+    return selectionsWithoutChildren
+  }
+
+  return selectionsWithoutChildren.filter(id => id !== element.id)
 }

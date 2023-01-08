@@ -6,12 +6,10 @@ import { Wireframes } from "./wireframes";
 export function Debug() {
   return (
     <>
-      <GroupInfo />
-      <Wireframes />
+      {/* <GroupInfo /> */}
+      {/* <Wireframes /> */}
+      {/* <ShapeDebug /> */}
+      {/* <HandleDebug /> */}
     </>
   );
-
-  // return null;
-  // return <ShapeDebug />;
-  // return <>{<HandleDebug />}</>;
 }

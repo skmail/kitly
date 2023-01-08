@@ -1,26 +1,31 @@
-import { Extension, satCollision } from "@kitly/system";
-import { RaycastResult, SelectionRaycastResult } from "../types";
+import { Extension, Collision } from "@kitly/system";
+import { SelectionRaycastResult } from "../types";
 import { Multiselect } from "./multiselect";
 
 export const multiselect: Extension = {
-  ui: Multiselect,
+  ui: {
+    pannable: Multiselect,
+  },
   raycast: {
     validate(app) {
-      const ray = app.useRaycastStore.getState().ray;
-      if (app.useMouseStore.getState().isDown && ray?.type === "selection") {
+      const rays = app.useRaycastStore.getState().rays;
+      if (
+        app.useMouseStore.getState().isDown &&
+        rays[0]?.type === "selection"
+      ) {
         return false;
       }
     },
-    post(ray) {
+    post(rays, app) {
       let isOverHandle = false;
       let selection: SelectionRaycastResult | undefined = undefined;
 
-      for (let r of ray.stack as RaycastResult[]) {
+      for (let r of rays) {
         if (r.type === "handle") {
           isOverHandle = true;
         }
         if (r.type === "selection") {
-          selection = r;
+          selection = r as SelectionRaycastResult;
         }
         if (selection && isOverHandle) {
           break;
@@ -28,7 +33,7 @@ export const multiselect: Extension = {
       }
 
       if (!isOverHandle && selection) {
-        return selection;
+        return [selection, ...rays];
       }
     },
     raycast(app) {
@@ -40,10 +45,12 @@ export const multiselect: Extension = {
       }
       const mouse = app.useMouseStore.getState().mouse;
 
-      if (satCollision([mouse], transformations.points)) {
-        return {
-          type: "selection",
-        };
+      if (Collision.points([mouse], transformations.points)) {
+        return [
+          {
+            type: "selection",
+          },
+        ];
       }
     },
   },

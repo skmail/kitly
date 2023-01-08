@@ -15,40 +15,22 @@ export function RaycastListener() {
       }
     }
 
-    let ray: Raycastable | undefined = undefined;
     let stack: Raycastable[] = [];
     for (let raycaster of app.extensions.raycasters.raycasters) {
       let result = raycaster(app);
       if (result !== undefined) {
-        if (!ray) {
-          ray = result;
-        }
-        stack.push(result);
+        stack.push(...result);
       }
     }
 
-    if (ray) {
-      for (let post of app.extensions.raycasters.post) {
-        const result = post(
-          {
-            ray,
-            stack,
-          },
-          app
-        );
-        if (result === false) {
-          ray = undefined;
-          stack = [];
-          break;
-        } else if (result && typeof result === "object") {
-          ray = result;
-          stack = [result];
-          break;
-        }
+    for (let post of app.extensions.raycasters.post) {
+      const result = post(stack, app);
+      if (result !== undefined) {
+        stack = result;
       }
     }
 
-    app.useRaycastStore.getState().setRay(ray, stack);
+    app.useRaycastStore.getState().setRays(stack);
   }, [app, mouse, isDown]);
 
   return null;

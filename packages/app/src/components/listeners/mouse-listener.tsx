@@ -60,11 +60,31 @@ export function MouseListener() {
       mouseState.setInsideWorkspace(false);
     };
 
+    let doubleClickTimeout: number;
+    const onDoubleClick = () => {
+      clearTimeout(doubleClickTimeout);
+      mouseState.setDoubleClick(true);
+      doubleClickTimeout = window.setTimeout(() => {
+        mouseState.setDoubleClick(false);
+      }, 50);
+    };
+
+    let clickTimeout: number;
+    const onClick = () => {
+      clearTimeout(clickTimeout);
+      mouseState.setClick(true);
+      clickTimeout = window.setTimeout(() => {
+        mouseState.setClick(false);
+      }, 50);
+    };
+
     window.addEventListener("pointermove", onMove);
     window.addEventListener("drag", onMove);
     element.addEventListener("pointerdown", onDown);
     element.addEventListener("pointerleave", onLeave);
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("dblclick", onDoubleClick);
+    window.addEventListener("click", onClick);
 
     return () => {
       element.removeEventListener("drag", onMove);
@@ -72,6 +92,8 @@ export function MouseListener() {
       element.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointerup", onUp);
       element.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("dblclick", onDoubleClick);
+      window.removeEventListener("click", onClick);
     };
   }, [app.dom.workspace, app.useMouseStore, app.useWorkspaceStore]);
   return null;

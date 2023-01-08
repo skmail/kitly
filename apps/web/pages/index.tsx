@@ -38,8 +38,8 @@ export default function Web() {
       // ...thousand,
       fitFrameTreeContents({
         id: "frame",
-        x: 400,
-        y: 15,
+        x: 0,
+        y: 0,
         disabledScale: true,
         matrix: [
           [1, 0, 0, 0],

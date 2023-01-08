@@ -2,13 +2,13 @@ import { RaycastResult } from "../types";
 import { useEffect } from "react";
 import { useApp } from "@kitly/app";
 import { App, shallowEqual } from "@kitly/system";
-import { ExtensionDefinition } from "./types";
+import { ElementHighlighterExtension } from "./types";
 
 export const ElementHighlightListener = () => {
-  const app = useApp<App<[ExtensionDefinition]>>();
+  const app = useApp<[ElementHighlighterExtension]>();
 
   const ray = app.useRaycastStore(
-    (state) => state.ray as RaycastResult,
+    (state) => state.rays[0] as RaycastResult,
     shallowEqual
   );
 
@@ -17,7 +17,7 @@ export const ElementHighlightListener = () => {
     shallowEqual
   );
 
-  useEffect(() => {
+  useEffect(() => { 
     if (
       ray?.type === "selection" ||
       app.stores.useTransformStore.getState().isTransforming

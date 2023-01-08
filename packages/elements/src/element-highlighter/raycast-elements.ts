@@ -3,7 +3,7 @@ import {
   Element,
   ElementTransformationDetails,
   Point,
-  satCollision,
+  Collision,
 } from "@kitly/system";
 import { ElementRaycastResult } from "../types";
 
@@ -16,7 +16,8 @@ const dfsRaycast = (
   tree: TreeNode[],
   mouse: Point,
   transformations: Record<string, ElementTransformationDetails>
-): ElementRaycastResult | undefined => {
+): ElementRaycastResult[] => {
+  const result: ElementRaycastResult[] = [];
   for (let i = tree.length - 1; i >= 0; i--) {
     const node = tree[i];
 
@@ -24,18 +25,17 @@ const dfsRaycast = (
     const transformation = transformations[id];
 
     if (node.children?.length) {
-      const result = dfsRaycast(node.children, mouse, transformations);
-      if (result) {
-        return result;
-      }
+      result.push(...dfsRaycast(node.children, mouse, transformations));
     }
-    if (satCollision([mouse], transformation.points)) {
-      return {
+    if (Collision.points([mouse], transformation.points)) {
+      result.push({
         type: "element",
         id: node.id,
-      };
+      });
     }
   }
+
+  return result;
 };
 
 const buildTree = (
@@ -107,5 +107,7 @@ export function raycastElements(mouse: Point, app: App) {
 
   const tree = buildTree(results, state.elements, indexes);
 
-  return dfsRaycast(tree, mouse, transformations);
+  const result = dfsRaycast(tree, mouse, transformations);
+
+  return result.length ? result : undefined;
 }
