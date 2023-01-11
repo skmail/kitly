@@ -1,0 +1,22 @@
+{
+  "name": "@kitly/element-image",
+  "version": "0.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "TIMING=1 eslint \"**/*.ts*\""
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "*",
+    "react": "^18.2.0",
+    "tsconfig": "*",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@kitly/app": "^0.0.0",
+    "@kitly/config": "^0.0.0",
+    "@kitly/system": "^0.0.0"
+  }
+}
