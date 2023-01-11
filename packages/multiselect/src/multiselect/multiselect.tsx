@@ -1,6 +1,5 @@
 import { usePrevious } from "@kitly/app/src/hooks/usePrevious";
 import {
-  App,
   shallowEqual,
   MouseButton,
   Point,
@@ -10,9 +9,9 @@ import {
 } from "@kitly/system";
 import { throttle } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
-import { useApp } from "../../../app/src/app-provider";
-import { Box } from "../element-highlighter/free-transform/box";
-import { ElementHighlighterExtension } from "../element-highlighter/types";
+import { useApp } from "@kitly/app/src/app-provider";
+import { Box } from "../../../elements/src/element-highlighter/free-transform/box";
+import { ElementHighlighterExtension } from "../../../elements/src/element-highlighter/types";
 
 type Bounds = {
   position: Point;

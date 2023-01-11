@@ -1,5 +1,5 @@
 import { Extension, Collision } from "@kitly/system";
-import { SelectionRaycastResult } from "../types";
+import { SelectionRaycastResult } from "../../../elements/src/types";
 import { Multiselect } from "./multiselect";
 
 export const multiselect: Extension = {

@@ -1,5 +1,5 @@
 {
-  "name": "@kitly/create-app",
+  "name": "@kitly/multiselect",
   "version": "0.0.0",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -15,14 +15,8 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "@kitly/elements": "^0.0.0",
-    "@kitly/multiselect": "^0.0.0",
-    "@kitly/element-frame": "^0.0.0",
-    "@kitly/element-group": "^0.0.0",
-    "@kitly/element-image": "^0.0.0",
-    "@kitly/element-text": "^0.0.0",
-    "@kitly/system": "^0.0.0",
-    "rbush": "^3.0.1",
-    "zustand": "^4.1.5"
+    "@kitly/app": "^0.0.0",
+    "@kitly/config": "^0.0.0",
+    "@kitly/system": "^0.0.0"
   }
 }
