@@ -93,7 +93,7 @@ const buildTree = (
 export function raycastElements(mouse: Point, app: App) {
   const state = app.useElementsStore.getState();
 
-  const results = app.useElementsStore.getState().spatialTree.search({
+  const results = state.spatialTree.search({
     minX: mouse[0],
     minY: mouse[1],
     maxX: mouse[0] + 15,
@@ -101,6 +101,9 @@ export function raycastElements(mouse: Point, app: App) {
   });
 
   const indexes = results.reduce<Record<string, number>>((acc, item) => {
+    if (item.type !== "element") {
+      return acc;
+    }
     const element = state.elements[item.id];
     const parentId = element.parentId;
     if (!parentId) {

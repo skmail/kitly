@@ -10,10 +10,10 @@ export function HoverHighlighter() {
     if (!state.hovered || state.selected.includes(state.hovered)) {
       return;
     }
+
     return state.transformations[state.hovered];
   }, shallow);
 
-  
   if (!transformations) {
     return null;
   }

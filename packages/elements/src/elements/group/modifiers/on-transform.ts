@@ -3,6 +3,7 @@ import {
   computeElementsTableTransformations,
   Element,
   ElementsState,
+  transformationsToSpatialData,
 } from "@kitly/system";
 import { TransformResult } from "../../../element-highlighter/types";
 import {
@@ -30,27 +31,12 @@ export function onTransformEnd(
     }
   }
 
-  Object.values(result.transformations).map((transform) => {
-    const old = state.transformations[transform.id];
-    state.spatialTree.remove(
-      {
-        minX: old.bounds.xmin,
-        minY: old.bounds.ymin,
-        maxX: old.bounds.xmax,
-        maxY: old.bounds.ymax,
-        id: transform.id,
-      },
-      (a, b) => a.id === b.id
-    );
-
-    state.spatialTree.insert({
-      minX: transform.bounds.xmin,
-      minY: transform.bounds.ymin,
-      maxX: transform.bounds.xmax,
-      maxY: transform.bounds.ymax,
-      id: transform.id,
-    });
-  });
+  state.spatialTree.update(
+    ...transformationsToSpatialData(
+      result.transformations,
+      state.transformations
+    )
+  );
 
   app.useElementsStore.getState().update({
     elements: {
@@ -91,7 +77,7 @@ const transformElement = (
   if (!results.root) {
     return;
   }
- 
+
   const transformations = computeElementsTableTransformations(
     {
       ids: [results.root],
@@ -102,7 +88,7 @@ const transformElement = (
     },
     state.transformations
   );
- 
+
   return {
     elements: results.elements,
     transformations,

@@ -17,7 +17,7 @@ export function remove(ids: string[], app: App) {
   ids = getIds(ids, state);
 
   state.deleteElement(ids);
- 
+
   for (let id of ids) {
     state.spatialTree.remove(
       {
@@ -26,10 +26,15 @@ export function remove(ids: string[], app: App) {
         maxX: state.transformations[id].bounds.xmax,
         maxY: state.transformations[id].bounds.ymax,
         id,
+        type: "element",
       },
       (a, b) => {
-        return a.id === b.id;
+        return a.id === b.id && a.type === b.type;
       }
     );
   }
+
+  // console.log(
+  //   state.spatialTree
+  // )
 }

@@ -21,11 +21,12 @@ export function computeElementTransformations(
   parentTransformations?: ElementTransformationDetails
 ): ElementTransformationDetails {
   const decomposedAffineMatrix = decompose(element.matrix);
-
+ 
   const width = element.width;
   const height = element.height;
 
   const rotationMatrix = multiply(
+    element.matrix,
     inverseAffine(
       matrixScale(
         decomposedAffineMatrix.scale.sx *
@@ -33,8 +34,7 @@ export function computeElementTransformations(
         decomposedAffineMatrix.scale.sy *
           Math.sign(decomposedAffineMatrix.scale.sy)
       )
-    ),
-    element.matrix
+    )
   );
 
   // alias of original matrix, will be combined with perspectiveMatrix in the future
@@ -63,7 +63,7 @@ export function computeElementTransformations(
   );
 
   const bounds = minMax(points);
- 
+
   return {
     id: element.id,
     x: element.x,

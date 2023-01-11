@@ -34,6 +34,10 @@ export const Vec = {
     return [vec[0] * num, vec[1] * num];
   },
 
+  multiply(vec1: Point, vec2: Point): Point {
+    return [vec1[0] * vec2[0], vec1[1] * vec2[1]];
+  },
+
   divideScalar(vec: Point, num: number): Point {
     return [vec[0] / num, vec[1] / num];
   },
@@ -44,5 +48,15 @@ export const Vec = {
 
   clamp(point: Point, min: number, max: number): Point {
     return [clamp(point[0], min, max), clamp(point[1], min, max)];
+  },
+
+  distance(vec1: Point, vec2: Point) {
+    return Math.sqrt(
+      Math.pow(vec2[0] - vec1[0], 2) + Math.pow(vec2[1] - vec1[1], 2)
+    );
+  },
+
+  atan2(point1: Point, point2: Point) {
+    return Math.atan2(point2[1] - point1[1], point2[0] - point1[0]);
   },
 };

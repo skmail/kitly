@@ -61,7 +61,7 @@ export type App<E extends Extension[] = Extension[]> = {
 export type ExtensionModifierCallback = (...args: any[]) => any;
 
 export type ExtensionModifierDetailed = {
-  priorty: number;
+  priority: number;
   modifier: ExtensionModifierCallback;
 };
 export type ExtensionModifier =

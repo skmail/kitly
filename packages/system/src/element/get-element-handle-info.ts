@@ -1,39 +1,31 @@
-import {
-  applyToPoint,
-  getAngle,
-  Point,
-  toDegree,
-  toRadians,
-  wrapAngle,
-} from "@free-transform/core";
+import { applyToPoint, Point, wrapAngle } from "@free-transform/core";
 import { ElementTransformationDetails } from "../types";
+import { Vec } from "../vec";
 
 interface Props {
   handle: [number, number];
   transformations: ElementTransformationDetails;
 }
 
-export function getDirection(angle: number) {
-  var directions = ["n", "ne", "e", "se", "s", "sw", "w", "nw"];
-  var index = Math.floor(((angle + 22.5) % 360) / 45);
-  return directions[index];
-}
-
 export function getElementHandleInfo({ handle, transformations }: Props) {
-  const boxSize = 100;
-  const point = applyToPoint(transformations.rotationMatrix, [
-    handle[0] * boxSize,
-    handle[1] * boxSize,
-  ]);
+  const size: Point = [
+    Math.max(transformations.width, transformations.height),
+    Math.max(transformations.width, transformations.height),
+  ];
 
-  const center = applyToPoint(transformations.rotationMatrix, [
-    0.5 * boxSize,
-    0.5 * boxSize,
-  ]);
+  const point = applyToPoint(
+    transformations.rotationMatrix,
+    Vec.multiply(handle, size)
+  );
 
-  const directionAngle = getAngle(point, center);
+  const center = applyToPoint(
+    transformations.rotationMatrix,
+    Vec.multiply([1 - handle[0], 1 - handle[1]], size)
+  );
+
+  const directionAngle = wrapAngle(Vec.atan2(center, point));
 
   return {
-    directionAngle: -directionAngle,
+    directionAngle: directionAngle,
   };
 }

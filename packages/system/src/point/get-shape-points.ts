@@ -64,6 +64,7 @@ export const getShapePoints = ({
 
   let point = applyToPoints(transformations.relativeMatrix, points);
 
+  
   return applyOffsetToPoints(
     applyZoomToPoints(
       applyOffsetToPoints(point, transformations.worldPosition),

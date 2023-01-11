@@ -1,6 +1,8 @@
-import { App, ElementExtension, ElementsState } from "@kitly/system";
+import { App, ElementExtension, ElementsState, minMax } from "@kitly/system";
 import { TransformResult } from "../../../element-highlighter/types";
+import { FrameTitleUtils } from "../frame-title-utils";
 import { FrameElement } from "../types";
+import { Icon } from "./icon";
 import { Renderer } from "./renderer";
 
 export const frame: ElementExtension = {
@@ -10,6 +12,8 @@ export const frame: ElementExtension = {
   renderer: Renderer,
   toString: () => "group string for now",
   transformRenderrer: false,
+  icon: Icon,
+
   modifiers: {
     transform(
       element: FrameElement,
@@ -27,6 +31,48 @@ export const frame: ElementExtension = {
           selectionTransformations: prevState.transformations[element.id],
         }
       );
+
+      if (!element.parentId) {
+        const oldBounds = minMax(
+          FrameTitleUtils.points(
+            FrameTitleUtils.info(prevState.transformations[element.id])
+          )
+        );
+        const bounds = minMax(
+          FrameTitleUtils.points(
+            FrameTitleUtils.info(state.transformations[element.id])
+          )
+        );
+
+        // console.log(
+        //   element.id,
+        //   bounds.ymin,
+        //   state.transformations[element.id].bounds.ymin
+          
+        // );
+        state.spatialTree.update(
+          {
+            minX: bounds.xmin,
+            minY: bounds.ymin,
+            maxX: bounds.xmax,
+            maxY: bounds.ymax,
+            id: element.id,
+            type: "frame-title",
+          },
+          {
+            minX: oldBounds.xmin,
+            minY: oldBounds.ymin,
+            maxX: oldBounds.xmax,
+            maxY: oldBounds.ymax,
+            id: element.id,
+            type: "frame-title",
+          }
+        );
+      }
+
+      // console.log(
+      //   state.spatialTree
+      // )
 
       return result;
     },

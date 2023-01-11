@@ -1,6 +1,7 @@
 import { App } from "@kitly/system";
 
-export function aspectRatio(selected: string[], app: App) {
+export function aspectRatio(app: App) {
+  const selected = app.useElementsStore.getState().selected;
   if (selected.length === 0) {
     return;
   }

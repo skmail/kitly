@@ -1,4 +1,5 @@
 import { Extension } from "@kitly/system";
+import { Icon } from "./icon";
 import { Renderer } from "./renderer";
 
 export const text: Extension = {
@@ -9,6 +10,7 @@ export const text: Extension = {
       // @ts-ignore
       renderer: Renderer,
       toString: () => "image string for now",
+      icon: Icon
     },
   ],
 };

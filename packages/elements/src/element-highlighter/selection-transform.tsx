@@ -9,6 +9,7 @@ import {
   translate,
   identity,
   Point,
+  Raycastable,
 } from "@kitly/system";
 import { useEffect, useRef } from "react";
 import { useApp } from "../../../app/src/app-provider";
@@ -29,7 +30,7 @@ export function SelectionTransform() {
   const offset = app.useWorkspaceStore((state) => state.offset, shallowEqual);
 
   const ray = app.useRaycastStore(
-    (state) => state.rays[0] as RaycastResult,
+    (state) => state.rays[0] as Raycastable,
     shallowEqual
   );
 
@@ -53,6 +54,7 @@ export function SelectionTransform() {
   );
 
   const transformer = useRef<any>();
+
   const prev = usePrevious({
     mouse,
     keyboard,
@@ -62,10 +64,10 @@ export function SelectionTransform() {
     (state) => state.transformMode
   );
   const startPosition = useRef<Point | undefined>(undefined);
-  useEffect(() => {
+  useEffect(() => {  
     if (mouse.button !== MouseButton.LEFT || !ray || !mouse.isDown) {
       transformer.current = undefined;
-      startPosition.current = undefined;  
+      startPosition.current = undefined;
       if (app.stores.useTransformStore.getState().isTransforming) {
         app.stores.useTransformStore.getState().setTransform(false);
         app.elements?.onTransformEnd?.(
@@ -77,15 +79,14 @@ export function SelectionTransform() {
 
     if (!startPosition.current) {
       startPosition.current = mouse.mouse;
-    }
-    const selected = app.useElementsStore.getState().selected;
+    } 
 
-    if (!selected.length) {
+    if (!app.selection.isEnabled()) {
       return;
     }
 
     const onChange = (changes: Partial<Element>) => {
-      app.elements.update(app.useElementsStore.getState().selected, changes);
+      app.selection.update(changes);
     };
 
     const zoom = app.useWorkspaceStore.getState().zoom;
@@ -118,7 +119,7 @@ export function SelectionTransform() {
         return;
       }
 
-      if (ray.type === "element" || ray.type === "selection") {
+      if (app.selection.isTranslate(ray)) {
         app.stores.useTransformStore.getState().setTransform(true, "translate");
         transformer.current = translate(
           {
@@ -126,9 +127,7 @@ export function SelectionTransform() {
             x: transformations.x,
             y: transformations.y,
           },
-          (payload) => {
-            onChange(payload);
-          }
+          onChange
         );
       } else if (ray.mode === "scale") {
         app.stores.useTransformStore.getState().setTransform(true, "scale");
@@ -142,7 +141,7 @@ export function SelectionTransform() {
             perspectiveMatrix: identity(),
             aspectRatio: () =>
               app.useKeyboardStore.getState().keyboard.ShiftLeft ||
-              app.transform.aspectRatio(selected),
+              app.transform.aspectRatio(),
             fromCenter: () => app.useKeyboardStore.getState().keyboard.AltLeft,
           },
           onChange

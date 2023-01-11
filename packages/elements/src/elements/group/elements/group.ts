@@ -1,5 +1,6 @@
 import { ElementExtension } from "@kitly/system";
 import { transformChildren } from "../modifiers/transform-children";
+import { Icon } from "./icon";
 import { Renderer } from "./renderer";
 
 export const group: ElementExtension = {
@@ -12,4 +13,5 @@ export const group: ElementExtension = {
   modifiers: {
     transform: transformChildren,
   },
+  icon: Icon
 };

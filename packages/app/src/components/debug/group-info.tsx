@@ -12,7 +12,7 @@ export function GroupInfo() {
       "group",
       "groupx",
       "group-image3",
-    ].map((id) => state.transformations[id])
+    ].map((id) => state.transformations[id]).filter(Boolean)
   );
 
   const pan = app.useWorkspaceStore((state) => state.pan);
@@ -31,6 +31,9 @@ export function GroupInfo() {
       <div>
         {selection.id}: <b>{selection.worldPosition[0].toFixed(2)}</b>,{" "}
         <b>{selection.worldPosition[1].toFixed(2)}</b>
+        <div>
+          {selection.rotation.degree}
+        </div>
       </div>
 
       <div>

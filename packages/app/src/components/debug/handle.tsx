@@ -15,9 +15,6 @@ export function HandleDebug() {
 
     const transformations = state.selectionTransformations;
 
-    const result: Point[][] = [];
-    const all: Point[] = [];
-
     if (!transformations) {
       return;
     }

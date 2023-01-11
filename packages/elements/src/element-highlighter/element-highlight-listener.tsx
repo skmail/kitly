@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useApp } from "@kitly/app";
 import { App, shallowEqual } from "@kitly/system";
 import { ElementHighlighterExtension } from "./types";
+import { usePrevious } from "@kitly/app/src/hooks/usePrevious";
 
 export const ElementHighlightListener = () => {
   const app = useApp<[ElementHighlighterExtension]>();
@@ -16,8 +17,10 @@ export const ElementHighlightListener = () => {
     (state) => [state.isDown, state.mouse],
     shallowEqual
   );
- 
-  useEffect(() => { 
+
+  const prevRay = usePrevious(ray);
+
+  useEffect(() => {
     if (
       ray?.type === "selection" ||
       app.stores.useTransformStore.getState().isTransforming
@@ -28,14 +31,15 @@ export const ElementHighlightListener = () => {
     if (isDown) {
       if (ray?.type === "element") {
         app.useElementsStore.getState().select([ray?.id]);
-      } else if (ray?.type !== "handle") {
+      } else if (!ray) {
         app.useElementsStore.getState().select([]);
       }
     } else if (ray?.type === "element") {
       app.useElementsStore.getState().hover(ray?.id);
       return;
     }
-    app.useElementsStore.getState().hover("");
+    if (prevRay && prevRay.type === "element")
+      app.useElementsStore.getState().hover("");
   }, [
     app.stores.useTransformStore,
     app.useElementsStore,
@@ -43,6 +47,7 @@ export const ElementHighlightListener = () => {
     isDown,
     mouse,
     ray,
+    prevRay,
   ]);
 
   return null;

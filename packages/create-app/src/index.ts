@@ -52,7 +52,7 @@ const foreceDefaultModifier = (
 ): ExtensionModifierDetailed => {
   if (typeof modifier === "function") {
     return {
-      priorty: 100,
+      priority: 100,
       modifier,
     };
   }
@@ -98,8 +98,8 @@ function createModifiers(app: App, extensions: Extension[]) {
           (acc, [name, modifiers]) => {
             modifiers = modifiers.sort(
               (a, b) =>
-                (a as ExtensionModifierDetailed).priorty -
-                (b as ExtensionModifierDetailed).priorty
+                (a as ExtensionModifierDetailed).priority -
+                (b as ExtensionModifierDetailed).priority
             );
 
             return {

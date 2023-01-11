@@ -8,9 +8,65 @@ import {
   Point,
   decompose,
   matrixScale,
-  Vec,
+  ElementTransformationDetails,
 } from "@kitly/system";
 import { TransformResult } from "./types";
+
+const applyToElement = (
+  payload: Partial<Element>,
+  element: Element,
+  selectionTransformations: ElementTransformationDetails,
+  transformations: ElementTransformationDetails,
+  prevSelectionTransformations: ElementTransformationDetails
+) => {
+  element = { ...element };
+  if (payload.matrix) {
+    const translation: Point = [
+      selectionTransformations.worldPosition[0] -
+        transformations.worldPosition[0],
+      selectionTransformations.worldPosition[1] -
+        transformations.worldPosition[1],
+    ];
+
+    const inverse = inverseAffine(prevSelectionTransformations.relativeMatrix);
+
+    element.matrix = multiply(
+      matrixTranslate(translation[0], translation[1]),
+      multiply(payload.matrix, inverse),
+      matrixTranslate(-translation[0], -translation[1]),
+      element.matrix
+    );
+
+    if (element.disabledScale || true) {
+      const dec = decompose(element.matrix);
+
+      element.width += Math.abs(element.width * dec.scale.sx) - element.width;
+
+      element.height +=
+        Math.abs(element.height * dec.scale.sy) - element.height;
+
+      element.matrix = multiply(
+        element.matrix,
+        inverseAffine(
+          matrixScale(
+            dec.scale.sx * Math.sign(dec.scale.sx),
+            dec.scale.sy * Math.sign(dec.scale.sy)
+          )
+        )
+      );
+    }
+  }
+
+  if (payload.x !== undefined) {
+    element.x += payload.x - prevSelectionTransformations.x;
+  }
+
+  if (payload.y !== undefined) {
+    element.y += payload.y - prevSelectionTransformations.y;
+  }
+
+  return element;
+};
 
 function isTransformChange(payload: Partial<Element>) {
   return [
@@ -64,57 +120,14 @@ export function transform(
   for (let id of ids) {
     const element: Element = {
       ...state.elements[id],
+      ...applyToElement(
+        payload,
+        state.elements[id],
+        selectionTransformations,
+        state.transformations[id],
+        prevSelectionTransformations
+      ),
     };
-
-    if (selectionTransformations) {
-      if (payload.matrix) {
-        const translation: Point = [
-          selectionTransformations.worldPosition[0] -
-            state.transformations[id].worldPosition[0],
-          selectionTransformations.worldPosition[1] -
-            state.transformations[id].worldPosition[1],
-        ];
-
-        const inverse = inverseAffine(
-          prevSelectionTransformations.relativeMatrix
-        );
-
-        element.matrix = multiply(
-          matrixTranslate(translation[0], translation[1]),
-          multiply(payload.matrix, inverse),
-          matrixTranslate(-translation[0], -translation[1]),
-          element.matrix
-        );
-
-        if (element.disabledScale || true) {
-          const dec = decompose(element.matrix);
-
-          element.width +=
-            Math.abs(element.width * dec.scale.sx) - element.width;
-
-          element.height +=
-            Math.abs(element.height * dec.scale.sy) - element.height;
-
-          element.matrix = multiply(
-            element.matrix,
-            inverseAffine(
-              matrixScale(
-                dec.scale.sx * Math.sign(dec.scale.sx),
-                dec.scale.sy * Math.sign(dec.scale.sy)
-              )
-            )
-          );
-        }
-      }
-
-      if (payload.x !== undefined) {
-        element.x += payload.x - prevSelectionTransformations.x;
-      }
-
-      if (payload.y !== undefined) {
-        element.y += payload.y - prevSelectionTransformations.y;
-      }
-    }
 
     results.elements[id] = element;
     results.transformations[id] = computeElementTransformations(

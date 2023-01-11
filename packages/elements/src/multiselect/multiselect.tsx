@@ -59,7 +59,9 @@ function InternalMultiselect() {
       ];
       const transformations = app.useElementsStore.getState().transformations;
       const itemsBounds: Point[][] = [];
-      const ids = results.map((result) => result.id);
+      const ids = results
+        .filter((result) => result.type === "element")
+        .map((result) => result.id);
       const newIds = app.elements.filterSelections(ids, collisionPoints);
 
       selections.current = [];

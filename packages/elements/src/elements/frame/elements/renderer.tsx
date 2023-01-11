@@ -5,7 +5,7 @@ import {
   OnElementUpdate,
   Point,
 } from "@kitly/system";
-import { ElementsRenderer } from "@kitly/app";
+import { ElementsRenderer, useApp } from "@kitly/app";
 import { useMemo } from "react";
 
 const toCSSMatrix = (matrix: Matrix) => {
@@ -22,20 +22,22 @@ const toCSSMatrix = (matrix: Matrix) => {
 export const Renderer = ({
   element,
   onUpdate,
-  offset = [0, 0],
   transformations,
 }: {
   element: FrameElement;
   onUpdate?: OnElementUpdate;
-  offset?: Point;
   transformations: ElementTransformationDetails;
 }) => {
   const transform = useMemo(
     () => toCSSMatrix(transformations.relativeMatrix),
     [transformations.relativeMatrix]
   );
-
   const clipPathId = `clip-${transformations.id}`;
+  const app = useApp();
+  const props = useMemo(
+    () => app.elements?.toProps?.(element, transformations) || {},
+    [app.elements, element, transformations]
+  );
 
   return (
     <>
@@ -45,7 +47,6 @@ export const Renderer = ({
             width={transformations.width}
             height={transformations.height}
             transform={transform}
-            
           />
         </clipPath>
       </defs>
@@ -58,7 +59,7 @@ export const Renderer = ({
           width={transformations.width}
           height={transformations.height}
           transform={transform}
-          fill={element.fill || "white"}
+          {...props}
         />
         <ElementsRenderer ids={element.children} />
       </g>

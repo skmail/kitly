@@ -15,7 +15,11 @@ export const Collision = {
 
   // @box points must be in clockwise direction
   // [top-left, top-right, bottom-right, bottom-left]
-  boxToPoints(box: Tuple<Point, 4>, points: Point[], mode: CollisionModeKey) {
+  boxToPoints(
+    box: Tuple<Point, 4>,
+    points: Point[],
+    mode: CollisionModeKey = CollisionMode.Cover
+  ) {
     if (mode === CollisionMode.Inside) {
       return Collision.points(box, points);
     } else if (mode === CollisionMode.Cover) {

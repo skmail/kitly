@@ -3,6 +3,7 @@ import {
   arrayToTable,
   computeElementsTableTransformations,
   Element,
+  transformationsToSpatialData,
 } from "@kitly/system";
 
 export function addFromTree(elements: Element[], app: App) {
@@ -11,16 +12,8 @@ export function addFromTree(elements: Element[], app: App) {
 
   const state = app.useElementsStore.getState();
 
-  Object.values(transformations).map((transform) => {
-    state.spatialTree.insert({
-      minX: transform.bounds.xmin,
-      minY: transform.bounds.ymin,
-      maxX: transform.bounds.xmax,
-      maxY: transform.bounds.ymax,
-      id: transform.id,
-    });
-  });
-
+  state.spatialTree.load(transformationsToSpatialData(transformations));
+  
   state.update({
     elements: {
       ...state.elements,
@@ -32,6 +25,11 @@ export function addFromTree(elements: Element[], app: App) {
       ...transformations,
     },
   });
+
+  return {
+    elements,
+    transformations,
+  };
 }
 
 function elementsArrayToTable(elements: Element[], parentId?: string) {
