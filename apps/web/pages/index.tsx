@@ -1,6 +1,7 @@
 import { App } from "@kitly/app";
 import { createApp } from "@kitly/create-app";
-import { fitFrameTreeContents, fitGroupTree } from "@kitly/elements";
+import { fitFrameTreeContents } from "@kitly/element-frame";
+import { fitGroupTree } from "@kitly/element-group";
 import { Element, Mat, Angle } from "@kitly/system";
 import { useEffect, useMemo } from "react";
 

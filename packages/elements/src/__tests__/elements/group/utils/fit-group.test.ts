@@ -1,5 +1,5 @@
 import { identity } from "@kitly/system";
-import { fitGroupTree } from "../../../../elements/group/utils";
+import { fitGroupTree } from "../../../../../../element-group/src/group/utils";
 
 describe("fit group tree", () => {
   it("fit group tree", () => {

@@ -4,15 +4,7 @@ import { useMouseStore } from "./store/mouse";
 import { useWorkspaceStore } from "./store/workspace";
 import { useKeyboardStore } from "./store/keyboard";
 import { useRaycastStore } from "./store/raycast";
-import {
-  elementHighlighter,
-  image,
-  multiselect,
-  text,
-  group,
-  frame,
-  manager,
-} from "@kitly/elements";
+import { elementHighlighter, multiselect, manager } from "@kitly/elements";
 
 function applyModifier<T extends App>(
   app: T,
@@ -46,6 +38,10 @@ import {
   ExtensionModifier,
   ExtensionModifierDetailed,
 } from "@kitly/system";
+import { image } from "@kitly/element-image";
+import { text } from "@kitly/element-text";
+import { group } from "@kitly/element-group";
+import { frame } from "@kitly/element-frame";
 
 const foreceDefaultModifier = (
   modifier: ExtensionModifier
@@ -121,10 +117,10 @@ export function createApp(
   extensions: Extension[] = [
     elementHighlighter,
     multiselect,
+    frame,
+    group,
     image,
     text,
-    group,
-    frame,
     manager,
   ]
 ): App {
