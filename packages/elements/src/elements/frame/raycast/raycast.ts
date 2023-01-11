@@ -1,10 +1,4 @@
-import {
-  App,
-  Collision,
-  getPointAtAngle,
-  makeWarpPoints,
-  Vec,
-} from "@kitly/system";
+import { App, Collision, Vec } from "@kitly/system";
 import { FrameTitleUtils } from "../frame-title-utils";
 
 export function raycast(app: App) {
@@ -38,7 +32,7 @@ export function raycast(app: App) {
     // console.log(
     //   mouseZoomed, points
     // )
-    
+
     if (Collision.points([mouseZoomed], points)) {
       rays.push({
         type: "frame-title",

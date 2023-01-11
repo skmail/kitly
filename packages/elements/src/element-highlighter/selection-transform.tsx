@@ -2,19 +2,17 @@ import {
   shallowEqual,
   MouseButton,
   Element,
-  App,
   Vec,
   rotate,
   scale,
   translate,
-  identity,
   Point,
-  Raycastable,
+  Mat,
 } from "@kitly/system";
 import { useEffect, useRef } from "react";
 import { useApp } from "../../../app/src/app-provider";
 import { usePrevious } from "../../../app/src/hooks/usePrevious";
-import { RaycastResult } from "../types";
+import { HandleRaycastResult, RaycastResult } from "../types";
 
 import { FreeTransformElement } from "./free-transform-element";
 import { ElementHighlighterExtension } from "./types";
@@ -30,7 +28,7 @@ export function SelectionTransform() {
   const offset = app.useWorkspaceStore((state) => state.offset, shallowEqual);
 
   const ray = app.useRaycastStore(
-    (state) => state.rays[0] as Raycastable,
+    (state) => state.rays[0] as RaycastResult,
     shallowEqual
   );
 
@@ -64,7 +62,7 @@ export function SelectionTransform() {
     (state) => state.transformMode
   );
   const startPosition = useRef<Point | undefined>(undefined);
-  useEffect(() => {  
+  useEffect(() => {
     if (mouse.button !== MouseButton.LEFT || !ray || !mouse.isDown) {
       transformer.current = undefined;
       startPosition.current = undefined;
@@ -79,7 +77,7 @@ export function SelectionTransform() {
 
     if (!startPosition.current) {
       startPosition.current = mouse.mouse;
-    } 
+    }
 
     if (!app.selection.isEnabled()) {
       return;
@@ -129,16 +127,16 @@ export function SelectionTransform() {
           },
           onChange
         );
-      } else if (ray.mode === "scale") {
+      } else if ((ray as HandleRaycastResult).mode === "scale") {
         app.stores.useTransformStore.getState().setTransform(true, "scale");
         transformer.current = scale(
-          ray.handle,
+          (ray as HandleRaycastResult).handle,
           {
             start: mouse.mouse,
             width: transformations.width,
             height: transformations.height,
             matrix: transformations.affineMatrix,
-            perspectiveMatrix: identity(),
+            perspectiveMatrix: Mat.identity(),
             aspectRatio: () =>
               app.useKeyboardStore.getState().keyboard.ShiftLeft ||
               app.transform.aspectRatio(),
@@ -146,10 +144,10 @@ export function SelectionTransform() {
           },
           onChange
         );
-      } else if (ray.mode === "rotate") {
+      } else if ((ray as HandleRaycastResult).mode === "rotate") {
         app.stores.useTransformStore.getState().setTransform(true, "rotate");
         transformer.current = rotate(
-          keyboard.AltLeft ? [0.5, 0.5] : ray.handle,
+          keyboard.AltLeft ? [0.5, 0.5] : (ray as HandleRaycastResult).handle,
           {
             start: mouse.mouse,
             width: transformations.width,

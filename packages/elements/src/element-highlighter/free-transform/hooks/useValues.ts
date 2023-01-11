@@ -1,14 +1,10 @@
 import {
-  decompose,
   makeWarpPoints,
   Matrix,
   Point,
   Tuple,
   makePerspectiveMatrix,
-  inverseAffine,
-  multiply,
-  matrixScale,
-  matrixTranslate,
+  Mat,
 } from "@free-transform/core";
 
 import { useMemo } from "react";
@@ -27,7 +23,7 @@ type Props = {
 
 export function useValues(props: Props) {
   return useMemo(() => {
-    const decomposedAffineMatrix = decompose(props.matrix);
+    const decomposedAffineMatrix = Mat.decompose(props.matrix);
 
     const width = props.disabledScale
       ? Math.abs(props.width * decomposedAffineMatrix.scale.sx)
@@ -58,13 +54,13 @@ export function useValues(props: Props) {
     let mat = props.matrix;
 
     if (props.disabledScale) {
-      const inverted = inverseAffine(mat);
+      const inverted = Mat.inverse(mat);
 
-      const decomposedInverted = decompose(inverted);
+      const decomposedInverted = Mat.decompose(inverted);
 
-      mat = multiply(
+      mat = Mat.multiply(
         mat,
-        matrixScale(
+        Mat.scale(
           decomposedInverted.scale.sx *
             Math.sign(decomposedAffineMatrix.scale.sx),
           decomposedInverted.scale.sy *
@@ -73,15 +69,14 @@ export function useValues(props: Props) {
       );
     }
 
-    let finalMatrix: Matrix = multiply(
-      matrixScale(props.zoom || 1, props.zoom || 1),
+    let finalMatrix: Matrix = Mat.multiply(
+      Mat.scale(props.zoom || 1, props.zoom || 1),
       mat,
       perspectiveMatrix
-      
     );
 
-    const translatedMatrix = multiply(
-      matrixTranslate(
+    const translatedMatrix = Mat.multiply(
+      Mat.translate(
         props.x * (props.zoom || 1) + (props.pan?.[0] || 0),
         props.y * (props.zoom || 1) + (props.pan?.[1] || 0)
       ),

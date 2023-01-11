@@ -1,4 +1,4 @@
-import { App, ElementsState, matrixScale, multiply } from "@kitly/system";
+import { App, ElementsState, Mat } from "@kitly/system";
 import { TransformResult } from "../../../element-highlighter/types";
 import { GroupElement } from "../types";
 
@@ -11,9 +11,9 @@ export function transformChildren(
   let result = app.elements.transform(
     element.children,
     {
-      matrix: multiply(
+      matrix: Mat.multiply(
         element.matrix,
-        matrixScale(
+        Mat.scale(
           element.width / prevState.transformations[element.id].width,
           element.height / prevState.transformations[element.id].height
         )

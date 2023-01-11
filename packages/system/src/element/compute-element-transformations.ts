@@ -1,16 +1,4 @@
-import {
-  Matrix,
-  inverseAffine,
-  multiply,
-  matrixScale,
-  matrixTranslate,
-  applyToPoints,
-  minMax,
-  toDegree,
-  decompose,
-  wrapAngle,
-  Point,
-} from "@free-transform/core";
+import { Matrix, minMax, Point, Mat, Angle } from "@free-transform/core";
 
 import { Element, ElementTransformationDetails, Table } from "../types";
 import { Vec } from "../vec";
@@ -20,15 +8,15 @@ export function computeElementTransformations(
   element: Element,
   parentTransformations?: ElementTransformationDetails
 ): ElementTransformationDetails {
-  const decomposedAffineMatrix = decompose(element.matrix);
- 
+  const decomposedAffineMatrix = Mat.decompose(element.matrix);
+
   const width = element.width;
   const height = element.height;
 
-  const rotationMatrix = multiply(
+  const rotationMatrix = Mat.multiply(
     element.matrix,
-    inverseAffine(
-      matrixScale(
+    Mat.inverse(
+      Mat.scale(
         decomposedAffineMatrix.scale.sx *
           Math.sign(decomposedAffineMatrix.scale.sx),
         decomposedAffineMatrix.scale.sy *
@@ -40,8 +28,8 @@ export function computeElementTransformations(
   // alias of original matrix, will be combined with perspectiveMatrix in the future
   let relativeMatrix: Matrix = element.matrix;
 
-  const absoluteMatrix = multiply(
-    matrixTranslate(element.x, element.y),
+  const absoluteMatrix = Mat.multiply(
+    Mat.translate(element.x, element.y),
     relativeMatrix
   );
 
@@ -53,7 +41,7 @@ export function computeElementTransformations(
     : [0, 0];
 
   const points = applyOffsetToPoints(
-    applyToPoints(absoluteMatrix, [
+    Mat.toPoints(absoluteMatrix, [
       [0, 0],
       [width, 0],
       [width, height],
@@ -77,8 +65,8 @@ export function computeElementTransformations(
     scale: decomposedAffineMatrix.scale,
     rotation: {
       ...decomposedAffineMatrix.rotation,
-      wraped: wrapAngle(decomposedAffineMatrix.rotation.angle),
-      degree: toDegree(decomposedAffineMatrix.rotation.angle),
+      wraped: Angle.wrap(decomposedAffineMatrix.rotation.angle),
+      degree: Angle.degrees(decomposedAffineMatrix.rotation.angle),
     },
     translation: { tx: element.matrix[0][3], ty: element.matrix[1][3] },
     disabledScale: element.disabledScale,

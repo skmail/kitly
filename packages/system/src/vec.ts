@@ -1,5 +1,6 @@
-import { Point, round } from "@free-transform/core";
+import { Point } from "@free-transform/core";
 import { clamp } from "./clamp";
+import { round } from "./round";
 
 export const Vec = {
   round(vec: Point, precision?: number): Point {

@@ -1,6 +1,6 @@
 import { useApp } from "@kitly/app";
 import { usePrevious } from "@kitly/app/src/hooks/usePrevious";
-import { Raycastable, shallowEqual, toDegree, Vec } from "@kitly/system";
+import { Raycastable, shallowEqual, Angle, Vec } from "@kitly/system";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FrameTitleUtils } from "../frame-title-utils";
 import { FrameTitleRaycastResult } from "../types";
@@ -21,7 +21,7 @@ const Title = ({ id }: { id: string }) => {
       position: info.position,
       width: info.width,
       offset: info.offset,
-      rotation: toDegree(info.angle),
+      rotation: Angle.degrees(info.angle),
       isActive: state.hovered === id || state.selected.includes(id),
     };
   }, shallowEqual);

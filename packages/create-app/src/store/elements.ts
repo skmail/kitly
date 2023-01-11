@@ -5,7 +5,7 @@ import {
   Element,
   computeElementTransformations,
   ElementsState,
-  identity,
+  Mat,
   minMax,
   Point,
   SpatialTree,
@@ -41,7 +41,7 @@ export const useElementsStore = create(
         if (ids.length === 1) {
           selectionTransformations = {
             ...state.transformations[ids[0]],
-            id:"__selection__",
+            id: "__selection__",
             x: state.transformations[ids[0]].worldPosition[0],
             y: state.transformations[ids[0]].worldPosition[1],
           };
@@ -66,7 +66,7 @@ export const useElementsStore = create(
             y: box.ymin,
             width: box.width,
             height: box.height,
-            matrix: identity(),
+            matrix: Mat.identity(),
           });
         }
         return {

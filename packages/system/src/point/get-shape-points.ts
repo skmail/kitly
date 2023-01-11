@@ -1,6 +1,7 @@
-import { applyToPoints, getPointAtAngle, Point } from "@free-transform/core";
+import { Mat, Angle, Point } from "@free-transform/core";
 import { ElementTransformationDetails, HandleProps } from "../types";
-import { applyOffsetToPoint, applyOffsetToPoints } from "./apply-offset";
+import { Vec } from "../vec";
+import { applyOffsetToPoints } from "./apply-offset";
 import { applyZoomToPoints } from "./apply-zoom";
 
 interface Props {
@@ -47,7 +48,7 @@ export const getShapePoints = ({
 
   const offset: [number, number] = [handleWidth / 2, handleHeight / 2];
 
-  const _offset = getPointAtAngle(
+  const _offset = Angle.point(
     [
       handle.offset[0] * signx - offset[0],
       handle.offset[1] * signy - offset[1],
@@ -55,21 +56,15 @@ export const getShapePoints = ({
     transformations.rotation.wraped
   );
 
-  let points: Point[] = [
+  return Mat.toPoints(transformations.relativeMatrix, [
     [x, y],
     [x, y + h / zoom],
     [x + w / zoom, y + h / zoom],
     [x + w / zoom, y],
-  ];
-
-  let point = applyToPoints(transformations.relativeMatrix, points);
-
-  
-  return applyOffsetToPoints(
-    applyZoomToPoints(
-      applyOffsetToPoints(point, transformations.worldPosition),
-      zoom
-    ),
-    _offset
+  ]).map((point) =>
+    Vec.add(
+      Vec.multiplyScalar(Vec.add(point, transformations.worldPosition), zoom),
+      _offset
+    )
   );
 };

@@ -2,13 +2,9 @@ import {
   computeElementTransformations,
   Element,
   ElementsState,
-  matrixTranslate,
-  multiply,
-  inverseAffine,
   Point,
-  decompose,
-  matrixScale,
   ElementTransformationDetails,
+  Mat,
 } from "@kitly/system";
 import { TransformResult } from "./types";
 
@@ -28,27 +24,27 @@ const applyToElement = (
         transformations.worldPosition[1],
     ];
 
-    const inverse = inverseAffine(prevSelectionTransformations.relativeMatrix);
+    const inverse = Mat.inverse(prevSelectionTransformations.relativeMatrix);
 
-    element.matrix = multiply(
-      matrixTranslate(translation[0], translation[1]),
-      multiply(payload.matrix, inverse),
-      matrixTranslate(-translation[0], -translation[1]),
+    element.matrix = Mat.multiply(
+      Mat.translate(translation[0], translation[1]),
+      Mat.multiply(payload.matrix, inverse),
+      Mat.translate(-translation[0], -translation[1]),
       element.matrix
     );
 
     if (element.disabledScale || true) {
-      const dec = decompose(element.matrix);
+      const dec = Mat.decompose(element.matrix);
 
       element.width += Math.abs(element.width * dec.scale.sx) - element.width;
 
       element.height +=
         Math.abs(element.height * dec.scale.sy) - element.height;
 
-      element.matrix = multiply(
+      element.matrix = Mat.multiply(
         element.matrix,
-        inverseAffine(
-          matrixScale(
+        Mat.inverse(
+          Mat.scale(
             dec.scale.sx * Math.sign(dec.scale.sx),
             dec.scale.sy * Math.sign(dec.scale.sy)
           )

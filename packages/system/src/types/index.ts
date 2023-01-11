@@ -1,7 +1,5 @@
-import { FC } from "react";
-import { Matrix, Point, Tuple } from "@free-transform/core";
-import { App, Extension, Raycastable } from "./app";
-
+ import { Matrix, Point, Tuple } from "@free-transform/core";
+ 
 export const MouseButton = {
   NONE: 0,
   LEFT: 1,

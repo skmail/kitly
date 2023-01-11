@@ -1,4 +1,4 @@
-import { applyToPoint, Point, wrapAngle } from "@free-transform/core";
+import { Mat, Angle, Point } from "@free-transform/core";
 import { ElementTransformationDetails } from "../types";
 import { Vec } from "../vec";
 
@@ -13,17 +13,17 @@ export function getElementHandleInfo({ handle, transformations }: Props) {
     Math.max(transformations.width, transformations.height),
   ];
 
-  const point = applyToPoint(
+  const point = Mat.toPoint(
     transformations.rotationMatrix,
     Vec.multiply(handle, size)
   );
 
-  const center = applyToPoint(
+  const center = Mat.toPoint(
     transformations.rotationMatrix,
     Vec.multiply([1 - handle[0], 1 - handle[1]], size)
   );
 
-  const directionAngle = wrapAngle(Vec.atan2(center, point));
+  const directionAngle = Angle.wrap(Vec.atan2(center, point));
 
   return {
     directionAngle: directionAngle,

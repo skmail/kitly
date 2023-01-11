@@ -1,4 +1,4 @@
-import { Matrix, Point, transpose, Tuple } from "@free-transform/core";
+import { Matrix, Point, Tuple , Mat} from "@kitly/system";
 import { ComponentProps, PropsWithChildren, useMemo } from "react";
 import { useValues } from "./hooks/useValues";
 
@@ -33,7 +33,7 @@ export function Transformed({
   });
  
   const matrix3d = useMemo(
-    () => transpose(values.translatedMatrix),
+    () => Mat.transpose(values.translatedMatrix),
     [values.translatedMatrix]
   );
   

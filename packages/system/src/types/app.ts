@@ -95,6 +95,7 @@ export type ElementExtension = {
   }>;
   toString(element: Element, app: App): string;
   transformRenderrer: false;
+  icon: FC;
   modifiers?: {
     [key: string]: ExtensionModifierCallback;
   };

@@ -1,6 +1,5 @@
 import { Point } from "@free-transform/core";
 import type { StoreApi, UseBoundStore } from "zustand";
-import type { subscribeWithSelector } from "zustand/middleware";
 import { ElementTransformationDetails, MouseButtonType, Element } from ".";
 import { Raycastable } from "./app";
 import { SpatialElement, SpatialTree } from "./spatial-tree";

@@ -1,24 +1,14 @@
-import {
-  applyToPoint,
-  applyToPoints,
-  decompose,
-  Element,
-  inverseAffine,
-  matrixScale,
-  minMax,
-  multiply,
-  Point,
-} from "@kitly/system";
+import { Element, minMax, Mat, Point } from "@kitly/system";
 
 interface ElementTree extends Exclude<Element, "children"> {
   children?: ElementTree[];
 }
 
 function calculateTransformations(element: Element, points: Point[]) {
-  const decomposed = decompose(element.matrix);
-  const rotationMatrix = multiply(
+  const decomposed = Mat.decompose(element.matrix);
+  const rotationMatrix = Mat.multiply(
     element.matrix,
-    inverseAffine(matrixScale(decomposed.scale.sx, decomposed.scale.sy))
+    Mat.inverse(Mat.scale(decomposed.scale.sx, decomposed.scale.sy))
   );
 
   //  reset the translation
@@ -29,12 +19,12 @@ function calculateTransformations(element: Element, points: Point[]) {
   rotationMatrix[0][1] *= -1;
   rotationMatrix[1][0] *= -1;
 
-  const box = minMax(applyToPoints(rotationMatrix, points));
+  const box = minMax(Mat.toPoints(rotationMatrix, points));
 
   // inverse the rotation matrix to get original points
-  const original = inverseAffine(rotationMatrix);
+  const original = Mat.inverse(rotationMatrix);
 
-  const [x, y] = applyToPoint(original, [box.xmin, box.ymin]);
+  const [x, y] = Mat.toPoint(original, [box.xmin, box.ymin]);
 
   // revert b,c
   rotationMatrix[0][1] *= -1;

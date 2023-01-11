@@ -1,16 +1,5 @@
 import { useApp } from "@kitly/app";
-import {
-  applyToPoints,
-  getPointAtAngle,
-  makeWarpPoints,
-  matrixRotate,
-  matrixTranslate,
-  multiply,
-  Point,
-  shallowEqual,
-  toDegree,
-  Vec,
-} from "@kitly/system";
+import { Point, shallowEqual, Angle, Vec } from "@kitly/system";
 import { useMemo } from "react";
 import { Box } from "../../../element-highlighter/free-transform/box";
 import { FrameTitleUtils } from "../frame-title-utils";
@@ -93,7 +82,7 @@ const DebugElement = ({ id }: { id: string }) => {
   const pan = app.useWorkspaceStore((state) => state.pan);
 
   const mouse = app.useMouseStore(
-    (state) => [state.mouse,  Vec.multiply(state.mouse, [1, 1])],
+    (state) => [state.mouse, Vec.multiply(state.mouse, [1, 1])],
     shallowEqual
   );
   return (
@@ -139,7 +128,7 @@ const DebugElement = ({ id }: { id: string }) => {
               transformOrigin: "0 0",
               transform: `translate(${point[0]}px, ${
                 point[1]
-              }px) rotate(${toDegree(state.angle)}deg)`,
+              }px) rotate(${Angle.degrees(state.angle)}deg)`,
             }}
             key={index}
             className="absolute  left-0 top-0 h-1 w-0.5 h-1 h-0.5  bg-red-500"

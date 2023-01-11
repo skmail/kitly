@@ -1,30 +1,6 @@
-import { useRotate } from "./hooks/useRotate";
-import { useScale } from "./hooks/useScale";
-import { useWarp } from "./hooks/useWarp";
-import { useTranslate } from "./hooks/useTranslate";
+import { Point } from "@free-transform/core";
 
-import {
-  Matrix,
-  Point,
-  Tuple,
-  Event,
-  EventValidator,
-  identity,
-  multiply,
-  matrixRotate,
-  matrixTranslate,
-  matrixScale,
-} from "@free-transform/core";
-import { useValues } from "./hooks/useValues";
-
-import {
-  ComponentProps,
-  createContext,
-  useContext,
-  useMemo,
-  useRef,
-} from "react";
-import { AnyEventPayload } from "./types";
+import { ComponentProps, createContext, useContext, useRef } from "react";
 import { ElementTransformationDetails } from "@kitly/system";
 
 type EventListeners<

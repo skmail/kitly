@@ -1,13 +1,8 @@
 import {
-  applyToPoint,
-  applyToPoints,
-  decompose,
   Element,
   ElementTransformationDetails,
-  inverseAffine,
-  matrixScale,
   minMax,
-  multiply,
+  Mat,
   Point,
   applyOffsetToPoints,
 } from "@kitly/system";
@@ -21,12 +16,12 @@ function calculateTransformations(
   points: Point[],
   transformations?: ElementTransformationDetails
 ) {
-  const decomposed = transformations || decompose(element.matrix);
+  const decomposed = transformations || Mat.decompose(element.matrix);
   const rotationMatrix =
     transformations?.rotationMatrix ||
-    multiply(
+    Mat.multiply(
       element.matrix,
-      inverseAffine(matrixScale(decomposed.scale.sx, decomposed.scale.sy))
+      Mat.inverse(Mat.scale(decomposed.scale.sx, decomposed.scale.sy))
     );
 
   //  reset the translation
@@ -37,12 +32,12 @@ function calculateTransformations(
   rotationMatrix[0][1] *= -1;
   rotationMatrix[1][0] *= -1;
 
-  const box = minMax(applyToPoints(rotationMatrix, points));
+  const box = minMax(Mat.toPoints(rotationMatrix, points));
 
   // inverse the rotation matrix to get original points
-  const original = inverseAffine(rotationMatrix);
+  const original = Mat.inverse(rotationMatrix);
 
-  const [x, y] = applyToPoint(original, [box.xmin, box.ymin]);
+  const [x, y] = Mat.toPoint(original, [box.xmin, box.ymin]);
 
   // revert b,c
   rotationMatrix[0][1] *= -1;
@@ -69,7 +64,7 @@ export function fitGroupTree(
   const points = children.flatMap((child) => {
     return transformations?.[child.id]
       ? transformations?.[child.id].points
-      : applyToPoints(child.matrix, [
+      : Mat.toPoints(child.matrix, [
           [child.x, child.y],
           [child.x + child.width, child.y],
           [child.x + child.width, child.y + child.height],
@@ -121,7 +116,7 @@ export function fitGroupTable(
   }
 
   const points = element.children.flatMap((id) => {
-    return applyToPoints(newTable[id].matrix, [
+    return Mat.toPoints(newTable[id].matrix, [
       [newTable[id].x, newTable[id].y],
       [newTable[id].x + newTable[id].width, newTable[id].y],
       [
@@ -170,7 +165,7 @@ export function fitElementParents(
   if (parent.type === "group") {
     const points = parent.children.flatMap((id) => {
       return applyOffsetToPoints(
-        applyToPoints(elements[id].matrix, [
+        Mat.toPoints(elements[id].matrix, [
           [0, 0],
           [elements[id].width, 0],
           [elements[id].width, elements[id].height],

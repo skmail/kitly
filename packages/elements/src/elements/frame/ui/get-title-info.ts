@@ -1,10 +1,4 @@
-import {
-  Point,
-  ElementTransformationDetails,
-  Vec,
-  matrixRotate,
-  applyToPoint,
-} from "@kitly/system";
+import { Point, ElementTransformationDetails, Vec, Mat } from "@kitly/system";
 
 const isMin = (
   point: Point,
@@ -53,7 +47,7 @@ export function getTitleInfo(transformations: ElementTransformationDetails) {
 
   const angle = Vec.atan2(topLeft, topRight);
 
-  const offset = applyToPoint(matrixRotate(angle), [0, -20]);
+  const offset = Mat.toPoint(Mat.rotate(angle), [0, -20]);
 
   const width = Vec.distance(topRight, topLeft);
 

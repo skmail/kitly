@@ -1,17 +1,6 @@
 import { Point } from "@free-transform/core";
+import { Vec } from "../vec";
 
-export const applyZoomToPoints = (
-  points: Point[],
-  zoom = 1,
-  pan: Point = [0, 0]
-): Point[] => {
-  return points.map((point) => applyZoomToPoint(point, zoom, pan));
-};
-
-export const applyZoomToPoint = (
-  point: Point,
-  zoom = 1,
-  pan: Point = [0, 0]
-): Point => {
-  return [point[0] * zoom + pan[0], point[1] * zoom + pan[1]];
+export const applyZoomToPoints = (points: Point[], zoom = 1): Point[] => {
+  return points.map((point) => Vec.multiplyScalar(point, zoom));
 };
